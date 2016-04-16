@@ -32,7 +32,7 @@ function draw() {
   camera.position.x = PLAYER.position.x;
 
   //My poor attempt to get the ground to wrap with movement
-  if(camera.position.x > GROUND.position.x - GROUND.width + width / 2) {
+  if(camera.position.x > GROUND.position.x - GROUND.width) {
     GROUND.position.x += GROUND.width;
    }
 
