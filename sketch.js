@@ -5,7 +5,7 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg;
 
 function preload() {
 
-    GroundImg = loadImage('http://i.imgur.com/vO9az9I.png');
+    GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
     FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
     PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
 
@@ -40,10 +40,14 @@ function draw() {
   camera.position.x = PLAYER.position.x;
 
   //My poor attempt to get the ground to wrap with movement
-  if(camera.position.x > width / 4 + GROUND.position.x) {
-    GROUND.position.x += (camera.position.x) - (width / 4 + GROUND.position.x);
+  if(camera.position.x > GROUND.position.x + width / 4) {
+    GROUND.position.x += (camera.position.x) - (GROUND.position.x + width / 4);
   } else if(camera.position.x < GROUND.position.x + width / 4) {
     GROUND.position.x -= GROUND.width;
+  }
+
+  if(PLAYER.position.y < 45) {
+    PLAYER.position.y = 45;
   }
 
   //Basic left and right movement for PLAYER aka KANYE aka YEEZUS
