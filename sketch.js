@@ -1,4 +1,4 @@
-var GRAVITY = .5;
+var GRAVITY = .7;
 var JUMP = -10;
 var GROUND, BG, PLAYER, ENEMY, FIRE;
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg;
@@ -40,9 +40,9 @@ function draw() {
   camera.position.x = PLAYER.position.x;
 
   //My poor attempt to get the ground to wrap with movement
-  if(camera.position.x > GROUND.position.x + width / 4) {
-    GROUND.position.x += (camera.position.x) - (GROUND.position.x + width / 4);
-  } else if(camera.position.x < GROUND.position.x + width / 4) {
+  if(camera.position.x >= GROUND.position.x + width * 1/3) {
+    GROUND.position.x += camera.position.x;
+  } else if(camera.position.x < GROUND.position.x - width / 2.5) {
     GROUND.position.x -= GROUND.width;
   }
 
