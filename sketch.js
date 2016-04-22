@@ -39,11 +39,11 @@ function draw() {
   //Says that CAMERA will always follow PLAYER
   camera.position.x = PLAYER.position.x;
 
-  //My poor attempt to get the ground to wrap with movement
-  if(camera.position.x > width / 4 + GROUND.position.x) {
-    GROUND.position.x += (camera.position.x) - (width / 4 + GROUND.position.x);
-  } else if(camera.position.x < GROUND.position.x + width / 4) {
-    GROUND.position.x -= GROUND.width;
+  //My better attempt to get the ground to wrap with movement
+  if(camera.position.x > GROUND.position.x + width / 4) {
+    GROUND.position.x += GROUND.width / 6;
+  } else if(camera.position.x < GROUND.position.x - width / 4) {
+    GROUND.position.x -= GROUND.width / 6;
   }
 
   //Basic left and right movement for PLAYER aka KANYE aka YEEZUS
