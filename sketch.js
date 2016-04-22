@@ -58,6 +58,10 @@ function draw() {
     PLAYER.position.y = 45;
   }
 
+  if(PLAYER.position.y < 45) {
+    PLAYER.position.y = 45;
+  }
+
   //Basic left and right movement for PLAYER aka KANYE aka YEEZUS
   if(keyDown("a")) {
     PLAYER.position.x -= 4;
