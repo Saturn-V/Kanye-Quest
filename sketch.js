@@ -39,23 +39,11 @@ function draw() {
   //Says that CAMERA will always follow PLAYER
   camera.position.x = PLAYER.position.x;
 
-<<<<<<< HEAD
   //My better attempt to get the ground to wrap with movement
   if(camera.position.x > GROUND.position.x + width / 4) {
     GROUND.position.x += GROUND.width / 6;
   } else if(camera.position.x < GROUND.position.x - width / 4) {
     GROUND.position.x -= GROUND.width / 6;
-=======
-  //My poor attempt to get the ground to wrap with movement
-  if(camera.position.x >= GROUND.position.x + width * 1/3) {
-    GROUND.position.x += camera.position.x;
-  } else if(camera.position.x < GROUND.position.x - width / 2.5) {
-    GROUND.position.x -= GROUND.width;
->>>>>>> master
-  }
-
-  if(PLAYER.position.y < 45) {
-    PLAYER.position.y = 45;
   }
 
   if(PLAYER.position.y < 45) {
