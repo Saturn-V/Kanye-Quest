@@ -1,11 +1,11 @@
-var GRAVITY = .5;
+var GRAVITY = .7;
 var JUMP = -10;
 var GROUND, BG, PLAYER, ENEMY, FIRE;
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg;
 
 function preload() {
 
-    GroundImg = loadImage('http://i.imgur.com/vO9az9I.png');
+    GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
     FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
     PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
 
@@ -39,11 +39,23 @@ function draw() {
   //Says that CAMERA will always follow PLAYER
   camera.position.x = PLAYER.position.x;
 
+<<<<<<< HEAD
   //My better attempt to get the ground to wrap with movement
   if(camera.position.x > GROUND.position.x + width / 4) {
     GROUND.position.x += GROUND.width / 6;
   } else if(camera.position.x < GROUND.position.x - width / 4) {
     GROUND.position.x -= GROUND.width / 6;
+=======
+  //My poor attempt to get the ground to wrap with movement
+  if(camera.position.x >= GROUND.position.x + width * 1/3) {
+    GROUND.position.x += camera.position.x;
+  } else if(camera.position.x < GROUND.position.x - width / 2.5) {
+    GROUND.position.x -= GROUND.width;
+>>>>>>> master
+  }
+
+  if(PLAYER.position.y < 45) {
+    PLAYER.position.y = 45;
   }
 
   //Basic left and right movement for PLAYER aka KANYE aka YEEZUS
