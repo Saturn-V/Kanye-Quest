@@ -6,7 +6,9 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg;
 function preload() {
 
     GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
+
     FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
+
     PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
 
 }
@@ -30,16 +32,13 @@ function setup() {
 
 function draw() {
   background(100, 150, 200);
-
   textAlign(CENTER);
-  text("Controls: AWSD + X", width/2, 20);
-
   PLAYER.velocity.y += GRAVITY;
 
   //Says that CAMERA will always follow PLAYER
   camera.position.x = PLAYER.position.x;
 
-  //My better attempt to get the ground to wrap with movement
+  //My better-than-alex's attempt to get the ground to wrap with movement
   if(camera.position.x > GROUND.position.x + width / 4) {
     GROUND.position.x += GROUND.width / 6;
   } else if(camera.position.x < GROUND.position.x - width / 4) {
@@ -53,8 +52,10 @@ function draw() {
   //Basic left and right movement for PLAYER aka KANYE aka YEEZUS
   if(keyDown("a")) {
     PLAYER.position.x -= 4;
+    PLAYER.mirrorX(1);
   } else if(keyDown("d")) {
     PLAYER.position.x += 4;
+    PLAYER.mirrorX(-1);
   }
 
   if(keyDown("w")) {
@@ -72,11 +73,18 @@ function draw() {
   console.log("ground: " + GROUND.position.x);
 
   if(keyWentDown("x")) {
-    var fire = createSprite(PLAYER.position.x + 20, PLAYER.position.y);
+    var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
     fire.addImage(FireImg);
-    fire.setSpeed(7, 0);
     fire.life = 40;
+    if(PLAYER.mirrorX() === -1) {
+      fire.setSpeed(15, 0);
+      fire.mirrorX(1);
+    } else {
+      fire.setSpeed(-15, 0);
+      fire.mirrorX(-1);
+    }
     FIRE.add(fire);
+
   }
 
   GROUND.debug = mouseIsPressed;
