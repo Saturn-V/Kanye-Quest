@@ -72,11 +72,25 @@ function draw() {
     if(keyDown(16)) {
       PLAYER.position.x -= 4.5;
     }
+    if(PLAYER.position.x <= PLAYER.width / 2) {
+      PLAYER.position.x = PLAYER.width / 2;
+    }
+    if(PLAYER.position.x <= 350) {
+      camera.position.x = 350;
+      GROUND.position.x = 350;
+    }
   } else if(keyDown(68)) {
     PLAYER.position.x += 4;
     PLAYER.mirrorX(-1);
     if(keyDown(16)) {
       PLAYER.position.x += 4.5;
+    }
+    if(PLAYER.position.x > 4000 - (PLAYER.width / 2)) {
+      PLAYER.position.x = 4000 - (PLAYER.width / 2);
+    }
+    if(PLAYER.position.x >= 3650) {
+      camera.position.x = 3650;
+      GROUND.position.x = 3650;
     }
   }
 
