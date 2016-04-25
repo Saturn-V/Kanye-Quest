@@ -52,8 +52,20 @@ function draw() {
   textAlign(CENTER);
   PLAYER.velocity.y += GRAVITY;
 
-  //Says that CAMERA will always follow PLAYER
-  camera.position.x = PLAYER.position.x;
+  //Says that CAMERA will always follow PLAYER except out of bounds
+  if(PLAYER.position.x >= 3650){
+    camera.position.x = 3650;
+  } else if(PLAYER.position.x <= 350){
+    camera.position.x = 350;
+
+  } else {
+    camera.position.x = PLAYER.position.x;
+  }
+  //bounding for PLAYER
+  if(PLAYER.position.x < 50)
+    PLAYER.position.x = 50;
+  else if(PLAYER.position.x > 3850)
+    PLAYER.position.x = 3850;
   // camera.position.y = PLAYER.position.y - 150;
 
   //My better-than-alex's attempt to get the ground to wrap with movement
@@ -62,61 +74,42 @@ function draw() {
   } else if(camera.position.x < GROUND.position.x - width / 4) {
     GROUND.position.x -= GROUND.width / 6;
   }
+  //sprinting
+  if(keyDown(16)) //SHIFT keycode = 16
+    playerStep = 16;
+  else
+    playerStep = 4;
 
-  //Player movement | abilities
-
-    //  Left | Right
-  if(keyDown(65)) {
-    PLAYER.position.x -= 4;
+  //Basic left and right movement for PLAYER aka KANYE aka YEEZUS
+  if(keyDown("a")) {
+    PLAYER.position.x -= playerStep;
     PLAYER.mirrorX(1);
-    if(keyDown(16)) {
-      PLAYER.position.x -= 4.5;
-    }
-    if(PLAYER.position.x <= PLAYER.width / 2) {
-      PLAYER.position.x = PLAYER.width / 2;
-    }
-    if(PLAYER.position.x <= 350) {
-      camera.position.x = 350;
-      GROUND.position.x = 350;
-    }
-  } else if(keyDown(68)) {
-    PLAYER.position.x += 4;
+  } else if(keyDown("d")) {
+    PLAYER.position.x += playerStep;
     PLAYER.mirrorX(-1);
-    if(keyDown(16)) {
-      PLAYER.position.x += 4.5;
-    }
-    if(PLAYER.position.x > 4000 - (PLAYER.width / 2)) {
-      PLAYER.position.x = 4000 - (PLAYER.width / 2);
-    }
-    if(PLAYER.position.x >= 3650) {
-      camera.position.x = 3650;
-      GROUND.position.x = 3650;
-    }
   }
 
-    //  Jump
-  if(keyWentDown(87)) {
-    PLAYER.velocity.y = JUMP;
 
-    if(PLAYER.position.y < 370) {
-      PLAYER.position.y = 370;
-    }
+  if(PLAYER.collide(GROUND)) {
+    PLAYER.velocity.y = 0;
+  }
+    //  Jump
+  if(keyWentDown("w")) {
+    PLAYER.velocity.y = JUMP;
+  }
+  //upper bounding box
+  if(PLAYER.position.y < 370) {
+    PLAYER.position.y = 370;
   }
 
     //  Player spits fire
   if(keyWentDown(32)) {
     var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
-    // fire.addImage(FireImg);
+    //fire.addImage(FireImg);
     fire.life = 40;
-    if(PLAYER.mirrorX() === -1) {
-      fire.setSpeed(15, 0);
-      fire.mirrorX(1);
-    } else {
-      fire.setSpeed(-15, 0);
-      fire.mirrorX(-1);
-    }
+    fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
+    fire.mirrorX(-1 * PLAYER.mirrorX());
     FIRE.add(fire);
-
   }
 
   //Prevents player from falling through ground (?)
@@ -124,9 +117,17 @@ function draw() {
     PLAYER.velocity.y = 0;
   }
 
+  /*
+
+
+  End of PLAYER/camera code.
+
+
+  */
+
   //Check values here
   console.log("camera: " + camera.position.x);
-  console.log("ground: " + GROUND.position.x);
+  console.log("player: " + PLAYER.position.x);
 
   //Environment sprites
 
