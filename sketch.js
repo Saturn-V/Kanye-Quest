@@ -50,7 +50,9 @@ function draw() {
   textAlign(CENTER);
   PLAYER.velocity.y += GRAVITY;
 
-  //Says that CAMERA will always follow PLAYER except out of bounds
+  //PLAYER and CAMERA bounds
+
+    //  Says that CAMERA will always follow PLAYER except out of bounds
   if(PLAYER.position.x >= 3850){
     camera.position.x = 3850;
   } else if(PLAYER.position.x <= 350){
@@ -58,7 +60,8 @@ function draw() {
   } else {
     camera.position.x = PLAYER.position.x;
   }
-  //bounding for PLAYER
+
+    //  bounding for PLAYER
   if(PLAYER.position.x < 50) {
     PLAYER.position.x = 50;
   } else if(PLAYER.position.x > 3850) {
@@ -67,35 +70,41 @@ function draw() {
   if(PLAYER.position.y < 200) {
     PLAYER.position.y = 200;
   }
+  /*
 
-  //My better-than-alex's attempt to get the ground to wrap with movement
+
+  End of PLAYER/CAMERA bounding
+
+
+  */
+
+  //Wrap ground
+
+    //  My better-than-alex's attempt to get the ground to wrap with movement
   if(camera.position.x > GROUND.position.x + width / 4) {
     GROUND.position.x += GROUND.width / 6;
   } else if(camera.position.x < GROUND.position.x - width / 4) {
     GROUND.position.x -= GROUND.width / 6;
   }
+  /*
+
+
+  End of ground wrapping.
+
+
+  */
 
   //Player movement | abilities
 
-    //  sprinting
-  if(keyDown(16)) { //SHIFT keycode = 16
-    playerStep = 16;
-  } else {
-    playerStep = 4;
-  }
-
-      //  Left | Right
-  if(keyDown("a")) {
+    //  Left | Right
+  if(keyDown(65)) {
     PLAYER.position.x -= playerStep;
     PLAYER.mirrorX(1);
-  } else if(keyDown("d")) {
+  } else if(keyDown(68)) {
     PLAYER.position.x += playerStep;
     PLAYER.mirrorX(-1);
   }
 
-  if(PLAYER.collide(GROUND)) {
-    PLAYER.velocity.y = 0;
-  }
     //  Jump
   if(keyWentDown(87)) {
     PLAYER.velocity.y = JUMP;
@@ -103,6 +112,13 @@ function draw() {
     if(PLAYER.position.y < 370) {
       PLAYER.position.y = 370;
     }
+  }
+
+    //  sprinting
+  if(keyDown(16)) { //SHIFT keycode = 16
+    playerStep = 16;
+  } else {
+    playerStep = 4;
   }
 
     //  Player spits fire
@@ -125,7 +141,7 @@ function draw() {
   /*
 
 
-  End of PLAYER/camera code.
+  End of PLAYER code.
 
 
   */
@@ -166,7 +182,9 @@ function draw() {
   var min = camera.position.x - width / 2 - 75;
   var max = camera.position.x + width / 2 + 75;
 
-  //  Create Clouds
+  //Clouds
+
+    //  Create Clouds
   for(var i = CLOUDS.length; i < 21; i++) {
 
     var posY = random(height / 3, 0);
@@ -182,7 +200,7 @@ function draw() {
     createCloud(posX, posY);
   }
 
-  //  Remove Clouds
+    //  Remove Clouds
   for(var i = 0; i < CLOUDS.length; i++) {
     if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) < min - width - (width * PLAYER.mirrorX()) || CLOUDS[i].position.x - (CLOUDS[i].width / 2) > max + width - (width * PLAYER.mirrorX())) {
       CLOUDS[i].remove();
@@ -211,6 +229,7 @@ function createEnemy(x, y) {
   return enemy;
 }
 
+//Creates a cloud
 function createCloud(x, y) {
   var newCloud = createSprite(x ,y, random(50, 75), random(16, 32));
   // newCloud.setCollider("rectangle");
