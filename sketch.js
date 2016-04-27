@@ -14,9 +14,7 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
-    //
     // FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
-    //
     // PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
 
 }
@@ -53,11 +51,10 @@ function draw() {
   PLAYER.velocity.y += GRAVITY;
 
   //Says that CAMERA will always follow PLAYER except out of bounds
-  if(PLAYER.position.x >= 3650){
-    camera.position.x = 3650;
+  if(PLAYER.position.x >= 3850){
+    camera.position.x = 3850;
   } else if(PLAYER.position.x <= 350){
     camera.position.x = 350;
-
   } else {
     camera.position.x = PLAYER.position.x;
   }
@@ -66,6 +63,8 @@ function draw() {
     PLAYER.position.x = 50;
   else if(PLAYER.position.x > 3850)
     PLAYER.position.x = 3850;
+  if(PLAYER.position.y < 200)
+    PLAYER.position.y = 200;
   // camera.position.y = PLAYER.position.y - 150;
 
   //My better-than-alex's attempt to get the ground to wrap with movement
@@ -97,11 +96,6 @@ function draw() {
   if(keyWentDown("w")) {
     PLAYER.velocity.y = JUMP;
   }
-  //upper bounding box
-  if(PLAYER.position.y < 370) {
-    PLAYER.position.y = 370;
-  }
-
     //  Player spits fire
   if(keyWentDown(32)) {
     var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
@@ -158,32 +152,28 @@ function draw() {
 
   }
 
-    //  Create Clouds
+  var min = camera.position.x - width / 2 - 75;
+  var max = camera.position.x + width / 2 + 75;
+
+  //  Create Clouds
   for(var i = CLOUDS.length; i < 21; i++) {
 
     var posY = random(height / 3, 0);
 
-    var j = CLOUDS.length;
-    var k = CLOUDS.length;
-    if(j <= 10) {
-      var posX = random(camera.position.x - (width / 2) + 50, camera.position.x + (width / 2) + 50);
-      createCloud(posX, posY);
-      j++
-    } else if( k > 10 || k <= 21) {
-      if (PLAYER.mirrorX() === -1) {
-        var posX = random(camera.position.x - (width / 2) + width, camera.position.x + (width / 2) + width);
-        createCloud(posX, posY);
-        k++
-      } else {
-        var posX = random(camera.position.x - (width / 2) - width, camera.position.x + (width / 2) - width);
-        createCloud(posX, posY);
-      }
+    if(i <= 10) {
+      // generates an x position that is onscreen
+      var posX = random(min, max);
+    } else {
+      // generates an x position to the next screen over, depending on which way the player is facing
+      var posX = random(min - width * PLAYER.mirrorX(), max - width * PLAYER.mirrorX());
     }
+    createCloud(posX, posY);
   }
 
-    //  Remove Clouds
+  //  Remove Clouds
   for(var i = 0; i < CLOUDS.length; i++) {
-    if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) < PLAYER.position.x - (width / 2)  || CLOUDS[i].position.x - (CLOUDS[i].width / 2) > PLAYER.position.x + (width / 2)) {
+    if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) < min - width - (width * PLAYER.mirrorX()) || 
+       CLOUDS[i].position.x - (CLOUDS[i].width / 2) > max + width - (width * PLAYER.mirrorX())) {
       CLOUDS[i].remove();
     }
   }
