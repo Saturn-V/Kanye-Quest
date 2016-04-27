@@ -75,21 +75,24 @@ function draw() {
 
   //Player movement | abilities
 
-    //  Left | Right
-  if(keyDown(65)) {
-    PLAYER.position.x -= playerStep;
-    PLAYER.mirrorX(1);
-  } else if(keyDown(68)) {
-    PLAYER.position.x += playerStep;
-    PLAYER.mirrorX(-1);
-  }
-
-    //sprinting
+    //  sprinting
   if(keyDown(16)) //SHIFT keycode = 16
     playerStep = 16;
   else
     playerStep = 4;
 
+      //  Left | Right
+  if(keyDown("a")) {
+    PLAYER.position.x -= playerStep;
+    PLAYER.mirrorX(1);
+  } else if(keyDown("d")) {
+    PLAYER.position.x += playerStep;
+    PLAYER.mirrorX(-1);
+  }
+
+  if(PLAYER.collide(GROUND)) {
+    PLAYER.velocity.y = 0;
+  }
     //  Jump
   if(keyWentDown(87)) {
     PLAYER.velocity.y = JUMP;
@@ -108,10 +111,6 @@ function draw() {
       fire.setSpeed(15, 0);
       fire.mirrorX(1);
       FIRE.add(fire);
-  }
-
-  if(PLAYER.collide(GROUND)) {
-    PLAYER.velocity.y = 0;
   }
 
   //Prevents player from falling through ground (?)
@@ -181,8 +180,7 @@ function draw() {
 
   //  Remove Clouds
   for(var i = 0; i < CLOUDS.length; i++) {
-    if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) < min - width - (width * PLAYER.mirrorX()) ||
-       CLOUDS[i].position.x - (CLOUDS[i].width / 2) > max + width - (width * PLAYER.mirrorX())) {
+    if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) < min - width - (width * PLAYER.mirrorX()) || CLOUDS[i].position.x - (CLOUDS[i].width / 2) > max + width - (width * PLAYER.mirrorX())) {
       CLOUDS[i].remove();
     }
   }
