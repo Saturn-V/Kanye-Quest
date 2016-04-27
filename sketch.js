@@ -33,7 +33,7 @@ function setup() {
 
   PLAYER = createSprite(width/2, 475, 50, 50);
   // PLAYER.addImage(PlayerImg);
-  PLAYER.setCollider("circle", 0,0,50);
+  PLAYER.setCollider("circle", 0,0,50);   
 
   BOSS_CASTLE = createSprite(3500, 475, 400, 400);
   BOSS_CASTLE.setCollider();
@@ -67,7 +67,7 @@ function draw() {
   } else if(PLAYER.position.x > 3850) {
     PLAYER.position.x = 3850;
   }
-  
+
   if(PLAYER.position.y < 250) {
      PLAYER.position.y = 250;
   }
