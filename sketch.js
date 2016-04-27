@@ -59,12 +59,14 @@ function draw() {
     camera.position.x = PLAYER.position.x;
   }
   //bounding for PLAYER
-  if(PLAYER.position.x < 50)
+  if(PLAYER.position.x < 50) {
     PLAYER.position.x = 50;
-  else if(PLAYER.position.x > 3850)
+  } else if(PLAYER.position.x > 3850) {
     PLAYER.position.x = 3850;
-  if(PLAYER.position.y < 200)
+  }
+  if(PLAYER.position.y < 200) {
     PLAYER.position.y = 200;
+  }
 
   //My better-than-alex's attempt to get the ground to wrap with movement
   if(camera.position.x > GROUND.position.x + width / 4) {
@@ -76,10 +78,11 @@ function draw() {
   //Player movement | abilities
 
     //  sprinting
-  if(keyDown(16)) //SHIFT keycode = 16
+  if(keyDown(16)) { //SHIFT keycode = 16
     playerStep = 16;
-  else
+  } else {
     playerStep = 4;
+  }
 
       //  Left | Right
   if(keyDown("a")) {
@@ -111,6 +114,7 @@ function draw() {
       fire.setSpeed(15, 0);
       fire.mirrorX(1);
       FIRE.add(fire);
+    }
   }
 
   //Prevents player from falling through ground (?)
