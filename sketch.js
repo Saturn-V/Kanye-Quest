@@ -10,7 +10,7 @@ var GRAVITY = .4; //Constant
 var JUMP = -10; //constant
 var GROUND, BG, PLAYER, BOSS_CASTLE, ENEMIES, FIRE, STRUCTURES, CLOUDS; //Sprites
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
-
+var fireGauge = 100;
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
@@ -118,9 +118,11 @@ function draw() {
   } else {
     playerStep = 4;
   }
-
-    //  Player spits fire
-  if(keyWentDown(32)) {
+  if(fireGauge < 100)
+    fireGauge += .1;
+  //  Player spits fire
+  if(keyWentDown(32) && fireGauge >= 10) {
+      fireGauge -= 10;
       var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
       //fire.addImage(FireImg);
       fire.life = 40;
@@ -143,8 +145,7 @@ function draw() {
   */
 
   //Check values here
-  console.log("camera: " + camera.position.x);
-  console.log("player: " + PLAYER.position.x);
+  console.log("fireGauge: " + fireGauge);
 
   //Environment sprites
 
