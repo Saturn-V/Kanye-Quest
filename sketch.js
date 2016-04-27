@@ -68,8 +68,8 @@ function draw() {
     PLAYER.position.x = 3850;
   }
   
-  if(PLAYER.position.y < 200) {
-    PLAYER.position.y = 200;
+  if(PLAYER.position.y < 250) {
+     PLAYER.position.y = 250;
   }
   /*
 
@@ -110,9 +110,6 @@ function draw() {
   if(keyWentDown(87)) {
     PLAYER.velocity.y = JUMP;
 
-    if(PLAYER.position.y < 370) {
-      PLAYER.position.y = 370;
-    }
   }
 
     //  sprinting
