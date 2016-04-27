@@ -67,6 +67,7 @@ function draw() {
   } else if(PLAYER.position.x > 3850) {
     PLAYER.position.x = 3850;
   }
+  
   if(PLAYER.position.y < 200) {
     PLAYER.position.y = 200;
   }
@@ -123,14 +124,12 @@ function draw() {
 
     //  Player spits fire
   if(keyWentDown(32)) {
-    var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
-    // fire.addImage(FireImg);
-    fire.life = 40;
-    if(PLAYER.mirrorX() === -1) {
-      fire.setSpeed(15, 0);
-      fire.mirrorX(1);
+      var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
+      //fire.addImage(FireImg);
+      fire.life = 40;
+      fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
+      fire.mirrorX(-1 * PLAYER.mirrorX());
       FIRE.add(fire);
-    }
   }
 
   //Prevents player from falling through ground (?)
