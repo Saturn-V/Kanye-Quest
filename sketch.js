@@ -10,8 +10,10 @@ var GRAVITY = .4; //Constant
 var JUMP = -10; //constant
 var GROUND, BG, PLAYER, BOSS_CASTLE, ENEMIES, FIRE, STRUCTURES, CLOUDS; //Sprites
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
+
 var FireCounter = 100;
 var FireStatus;
+var PlayerHealth = 100;
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
@@ -40,6 +42,7 @@ function setup() {
   BOSS_CASTLE.setCollider();
 
   FireStatus = createSprite(125, 50, 200, 50);
+  PlayerHealth = createSprite(125, 110, 200, 50);
 
   ENEMIES = new Group();
   FIRE = new Group();
@@ -78,13 +81,21 @@ function draw() {
     //  bounding for FireStatus
   if(FireStatus.position.x < 125 || PLAYER.position.x <= width/2) {
     FireStatus.position.x = 125;
-  } else if(FireStatus.position.x > 3625) {
-    FireStatus.position.x = 3625;
+  } else if(FireStatus.position.x - (FireStatus.width/2) > 3625 - (FireStatus.width/2)) {
+
+    FireStatus.position.x = 3625 - (FireStatus.width/2);
+  }
+
+    //  bounding for PlayerHealth
+  if(PlayerHealth.position.x < 125 || PLAYER.position.x <= width/2) {
+    PlayerHealth.position.x = 125;
+  } else if(PlayerHealth.position.x > 3625) {
+    PlayerHealth.position.x = 3625;
   }
   /*
 
 
-  End of PLAYER | CAMERA | FireStatus Bar bounding
+  End of PLAYER | CAMERA | FireStatus Bar | PlayerHealth Bar bounding
 
 
   */
@@ -115,11 +126,15 @@ function draw() {
     PLAYER.mirrorX(1);
 
     FireStatus.position.x -= playerStep;
+
+    PlayerHealth.position.x -= playerStep;
   } else if(keyDown(68)) {
     PLAYER.position.x += playerStep;
     PLAYER.mirrorX(-1);
 
     FireStatus.position.x += playerStep;
+
+    PlayerHealth.position.x += playerStep;
   }
 
     //  Jump
@@ -138,7 +153,7 @@ function draw() {
 
     FireCounter += .1;
     FireStatus.width += .1;
-    FireStatus.position.x += .1;
+    FireStatus.position.x += .05;
 
   }
 
@@ -154,7 +169,7 @@ function draw() {
 
       FireCounter -= 10;
       FireStatus.width -= 10;
-      FireStatus.position.x -= 10;
+      FireStatus.position.x -= 5;
   }
 
   //Prevents player from falling through ground (?)
@@ -171,12 +186,12 @@ function draw() {
   */
 
   //Check values here
-  console.log("FireCounter: " + FireCounter);
+  console.log("FireStatus.position.x: " + FireStatus.position.x);
 
   //Environment sprites
 
     //  Create Enemies
-  for(var i = ENEMIES.length; i < 4; i++) {
+  for(var i = ENEMIES.length; i < 2; i++) {
     var posX = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
     var posY = 475;
     createEnemy(posX, posY);
