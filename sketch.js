@@ -10,7 +10,8 @@ var GRAVITY = .4; //Constant
 var JUMP = -10; //constant
 var GROUND, BG, PLAYER, BOSS_CASTLE, ENEMIES, FIRE, STRUCTURES, CLOUDS; //Sprites
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
-var fireGauge = 100;
+var FireCounter = 100;
+var FireStatus;
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
@@ -33,10 +34,12 @@ function setup() {
 
   PLAYER = createSprite(width/2, 475, 50, 50);
   // PLAYER.addImage(PlayerImg);
-  PLAYER.setCollider("circle", 0,0,50);   
+  PLAYER.setCollider("circle", 0,0,50);
 
   BOSS_CASTLE = createSprite(3500, 475, 400, 400);
   BOSS_CASTLE.setCollider();
+
+  FireStatus = createSprite(125, 50, 200, 50);
 
   ENEMIES = new Group();
   FIRE = new Group();
@@ -71,10 +74,17 @@ function draw() {
   if(PLAYER.position.y < 250) {
      PLAYER.position.y = 250;
   }
+
+    //  bounding for FireStatus
+  if(FireStatus.position.x < 125 || PLAYER.position.x <= width/2) {
+    FireStatus.position.x = 125;
+  } else if(FireStatus.position.x > 3625) {
+    FireStatus.position.x = 3625;
+  }
   /*
 
 
-  End of PLAYER/CAMERA bounding
+  End of PLAYER | CAMERA | FireStatus Bar bounding
 
 
   */
@@ -95,40 +105,56 @@ function draw() {
 
   */
 
-  //Player movement | abilities
+  //if player moves x, move FireStatus x.
+
+  //Player GUI movement | abilities
 
     //  Left | Right
   if(keyDown(65)) {
     PLAYER.position.x -= playerStep;
     PLAYER.mirrorX(1);
+
+    FireStatus.position.x -= playerStep;
   } else if(keyDown(68)) {
     PLAYER.position.x += playerStep;
     PLAYER.mirrorX(-1);
+
+    FireStatus.position.x += playerStep;
   }
 
     //  Jump
   if(keyWentDown(87)) {
     PLAYER.velocity.y = JUMP;
-
   }
 
     //  sprinting
   if(keyDown(16)) { //SHIFT keycode = 16
-    playerStep = 16;
+    playerStep = 9;
   } else {
     playerStep = 4;
   }
-  if(fireGauge < 100)
-    fireGauge += .1;
+
+  if(FireCounter < 100) {
+
+    FireCounter += .1;
+    FireStatus.width += .1;
+    FireStatus.position.x += .1;
+
+  }
+
+
   //  Player spits fire
-  if(keyWentDown(32) && fireGauge >= 10) {
-      fireGauge -= 10;
+  if(keyWentDown(32) && FireCounter >= 10) {
       var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
       //fire.addImage(FireImg);
       fire.life = 40;
       fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
       fire.mirrorX(-1 * PLAYER.mirrorX());
       FIRE.add(fire);
+
+      FireCounter -= 10;
+      FireStatus.width -= 10;
+      FireStatus.position.x -= 10;
   }
 
   //Prevents player from falling through ground (?)
@@ -145,7 +171,7 @@ function draw() {
   */
 
   //Check values here
-  console.log("fireGauge: " + fireGauge);
+  console.log("FireCounter: " + FireCounter);
 
   //Environment sprites
 
