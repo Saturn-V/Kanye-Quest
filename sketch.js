@@ -14,12 +14,8 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
 var FireCounter = 100;
 var FireStatus;
     FireStatus.depth = 10;
-var PlayerHealth = 100;
-<<<<<<< HEAD
 var EnemyHealth;
-=======
     PlayerHealth.depth = 10;
->>>>>>> origin/master
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
