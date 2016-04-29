@@ -57,9 +57,12 @@ function draw() {
   PLAYER.velocity.y += GRAVITY;
 
   //Player GUI movement 
-  FireStatus.position.x = camera.position.x + (FireCounter - 100);
-  PlayerHealth.position.x = camera.position.x;
+  FireStatus.position.x = camera.position.x + (FireCounter - 100) - width/2 + 125;
+  PlayerHealth.position.x = camera.position.x - width/2 + 125;
   FireStatus.width = FireCounter * 2;
+  
+  FireStatus.depth = 3;
+  PlayerHealth.depth = 3;
   //PLAYER and CAMERA bounds
     //  Says that CAMERA will always follow PLAYER except out of bounds
   if(PLAYER.position.x >= 3850){
@@ -244,6 +247,7 @@ function createEnemy(x, y) {
 //Creates a cloud
 function createCloud(x, y) {
   var newCloud = createSprite(x ,y, random(50, 75), random(16, 32));
+      newCloud.depth = y / 100;
   // newCloud.setCollider("rectangle");
   CLOUDS.add(newCloud);
 
