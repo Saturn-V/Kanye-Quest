@@ -56,8 +56,11 @@ function draw() {
   textAlign(CENTER);
   PLAYER.velocity.y += GRAVITY;
 
+  //Player GUI movement 
+  FireStatus.position.x = camera.position.x + (FireCounter - 100);
+  PlayerHealth.position.x = camera.position.x;
+  FireStatus.width = FireCounter * 2;
   //PLAYER and CAMERA bounds
-
     //  Says that CAMERA will always follow PLAYER except out of bounds
   if(PLAYER.position.x >= 3850){
     camera.position.x = 3850;
@@ -78,24 +81,11 @@ function draw() {
      PLAYER.position.y = 250;
   }
 
-    //  bounding for FireStatus
-  if(FireStatus.position.x < 125 || PLAYER.position.x <= width/2) {
-    FireStatus.position.x = 125;
-  } else if(FireStatus.position.x - (FireStatus.width/2) > 3625 - (FireStatus.width/2)) {
 
-    FireStatus.position.x = 3625 - (FireStatus.width/2);
-  }
-
-    //  bounding for PlayerHealth
-  if(PlayerHealth.position.x < 125 || PLAYER.position.x <= width/2) {
-    PlayerHealth.position.x = 125;
-  } else if(PlayerHealth.position.x > 3625) {
-    PlayerHealth.position.x = 3625;
-  }
   /*
 
 
-  End of PLAYER | CAMERA | FireStatus Bar | PlayerHealth Bar bounding
+  End of PLAYER | CAMERA | GUI bounding
 
 
   */
@@ -116,25 +106,15 @@ function draw() {
 
   */
 
-  //if player moves x, move FireStatus x.
-
-  //Player GUI movement | abilities
+  //Abilities
 
     //  Left | Right
   if(keyDown(65)) {
     PLAYER.position.x -= playerStep;
     PLAYER.mirrorX(1);
-
-    FireStatus.position.x -= playerStep;
-
-    PlayerHealth.position.x -= playerStep;
   } else if(keyDown(68)) {
     PLAYER.position.x += playerStep;
     PLAYER.mirrorX(-1);
-
-    FireStatus.position.x += playerStep;
-
-    PlayerHealth.position.x += playerStep;
   }
 
     //  Jump
@@ -142,7 +122,7 @@ function draw() {
     PLAYER.velocity.y = JUMP;
   }
 
-    //  sprinting
+    //  Sprinting
   if(keyDown(16)) { //SHIFT keycode = 16
     playerStep = 9;
   } else {
@@ -150,11 +130,7 @@ function draw() {
   }
 
   if(FireCounter < 100) {
-
     FireCounter += .1;
-    FireStatus.width += .1;
-    FireStatus.position.x += .05;
-
   }
 
 
@@ -168,8 +144,6 @@ function draw() {
       FIRE.add(fire);
 
       FireCounter -= 10;
-      FireStatus.width -= 10;
-      FireStatus.position.x -= 5;
   }
 
   //Prevents player from falling through ground (?)
