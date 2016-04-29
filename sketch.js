@@ -13,8 +13,13 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
 
 var FireCounter = 100;
 var FireStatus;
+    FireStatus.depth = 10;
 var PlayerHealth = 100;
+<<<<<<< HEAD
 var EnemyHealth;
+=======
+    PlayerHealth.depth = 10;
+>>>>>>> origin/master
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
@@ -65,8 +70,6 @@ function draw() {
 
   FireStatus.width = FireCounter * 2;
 
-  FireStatus.depth = 3;
-  PlayerHealth.depth = 3;
   //PLAYER and CAMERA bounds
     //  Says that CAMERA will always follow PLAYER except out of bounds
   if(PLAYER.position.x >= 3850){
@@ -215,14 +218,12 @@ function draw() {
     if(i <= 10) {
       // generates an x position that is onscreen
       var posX = random(min, max);
-
     } else {
       // generates an x position to the next screen over, depending on which way the player is facing
       var posX = random(min - width * PLAYER.mirrorX(), max - width * PLAYER.mirrorX());
     }
     createCloud(posX, posY);
   }
-
     //  Remove Clouds
   for(var i = 0; i < CLOUDS.length; i++) {
     if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) < min - width - (width * PLAYER.mirrorX()) || CLOUDS[i].position.x - (CLOUDS[i].width / 2) > max + width - (width * PLAYER.mirrorX())) {
