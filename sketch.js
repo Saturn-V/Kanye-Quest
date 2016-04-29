@@ -10,6 +10,7 @@ var GRAVITY = .4; //Constant
 var JUMP = -10; //constant
 var GROUND, BG, PLAYER, BOSS_CASTLE, ENEMIES, FIRE, STRUCTURES, CLOUDS; //Sprites
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
+var paused = false;
 
 var FireCounter = 100;
 var FireStatus;
@@ -57,7 +58,6 @@ function draw() {
   background(100, 150, 200);
   textAlign(CENTER);
   PLAYER.velocity.y += GRAVITY;
-
   //Player GUI movement
   FireStatus.position.x = camera.position.x + (FireCounter - 100) - width/2 + 125;
   PlayerHealth.position.x = camera.position.x - width/2 + 125;
@@ -144,13 +144,14 @@ function draw() {
       //fire.addImage(FireImg);
       fire.life = 40;
       fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
+      fire.setCollider("circle", 0, 0, 50)
       fire.mirrorX(-1 * PLAYER.mirrorX());
+      
       FIRE.add(fire);
-
       FireCounter -= 10;
   }
 
-  //Prevents player from falling through ground (?)
+  //Prevents player from falling through ground
   if(PLAYER.collide(GROUND)) {
     PLAYER.velocity.y = 0;
   }
@@ -167,36 +168,30 @@ function draw() {
   console.log("FireStatus.position.x: " + FireStatus.position.x);
 
   //Environment sprites
+  var min = camera.position.x - width / 2 - 75;
+  var max = camera.position.x + width / 2 + 75;
 
     //  Create Enemies
   for(var i = ENEMIES.length; i < 2; i++) {
-    var posX = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
+    var posX = random(min, max);
     var posY = 475;
     createEnemy(posX, posY);
-
-    // if(ENEMIES.get(i).overlap(STRUCTURES)) {
-    //   if(ENEMIES.get(i).getDirection == 180) {
-    //     ENEMIES.get(i).setSpeed(1, 0);
-    //   } else {
-    //     ENEMIES.get(i).setSpeed(-1, 0)
-    //   }
-    // }
   }
 
     //  Remove Enemies
   for (var i = 0; i < ENEMIES.length; i++) {
-    if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < PLAYER.position.x - (width / 2) || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > PLAYER.position.x + (width / 2)) {
+    if(ENEMIES[i].overlap(FIRE)) {
+      ENEMIES[i].height -= 1;
+      ENEMIES[i].width  -= 1;
+      //positioning
+      ENEMIES[i].position.y = 500 - ENEMIES[i].height/2;
+
+      if(ENEMIES[i].width < 12)
+        ENEMIES[i].remove();
+    } else if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < min || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > max) {
       ENEMIES[i].remove();
-    }
+    } 
   }
-
-    //  Structures
-  if(frameCount % 60 == 0) {
-
-  }
-
-  var min = camera.position.x - width / 2 - 75;
-  var max = camera.position.x + width / 2 + 75;
 
   //Clouds
 
@@ -226,10 +221,17 @@ function draw() {
   PLAYER.debug = true;
   BOSS_CASTLE.debug = true;
 
-
   drawSprites();
 }
-
+/* attempted pause
+function keyWentDown("p") {
+    if(paused)
+      noLoop();
+    else
+      loop();
+    paused = !paused;
+}
+*/
 //Creates an enemy
 function createEnemy(x, y) {
   var enemy = createSprite(x, y, 50, 50);
