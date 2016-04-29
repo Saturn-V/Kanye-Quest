@@ -58,9 +58,10 @@ function draw() {
   textAlign(CENTER);
   PLAYER.velocity.y += GRAVITY;
 
-  //Player GUI movement 
+  //Player GUI movement
   FireStatus.position.x = camera.position.x + (FireCounter - 100) - width/2 + 125;
   PlayerHealth.position.x = camera.position.x - width/2 + 125;
+
   FireStatus.width = FireCounter * 2;
 
   //PLAYER and CAMERA bounds
