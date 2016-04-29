@@ -56,9 +56,9 @@ function draw() {
   textAlign(CENTER);
   PLAYER.velocity.y += GRAVITY;
 
-  //Player GUI movement 
-  FireStatus.position.x = camera.position.x + (FireCounter - 100);
-  PlayerHealth.position.x = camera.position.x;
+  //Player GUI movement
+  FireStatus.position.x = camera.position.x + (FireCounter - 100) - (width/3.25);
+  PlayerHealth.position.x = camera.position.x - (width/3.25);
   FireStatus.width = FireCounter * 2;
   //PLAYER and CAMERA bounds
     //  Says that CAMERA will always follow PLAYER except out of bounds
