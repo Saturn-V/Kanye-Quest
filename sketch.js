@@ -14,6 +14,7 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
 var FireCounter = 100;
 var FireStatus;
 var PlayerHealth = 100;
+var EnemyHealth;
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
@@ -48,6 +49,8 @@ function setup() {
   FIRE = new Group();
   STRUCTURES = new Group();
   CLOUDS = new Group();
+
+  EnemyHealth = new Group();
 
 }
 
@@ -84,6 +87,7 @@ function draw() {
   if(PLAYER.position.y < 250) {
      PLAYER.position.y = 250;
   }
+
 
 
   /*
@@ -170,17 +174,25 @@ function draw() {
 
     //  Create Enemies
   for(var i = ENEMIES.length; i < 2; i++) {
-    var posX = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
-    var posY = 475;
-    createEnemy(posX, posY);
+    var posXenemy = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
+    var posYenemy = 475;
+    createEnemy(posXenemy, posYenemy);
+  }
 
-    // if(ENEMIES.get(i).overlap(STRUCTURES)) {
-    //   if(ENEMIES.get(i).getDirection == 180) {
-    //     ENEMIES.get(i).setSpeed(1, 0);
-    //   } else {
-    //     ENEMIES.get(i).setSpeed(-1, 0)
-    //   }
-    // }
+    //  Create EnemyHealth
+  for(var i = 0; i < ENEMIES.length; i++) {
+    if(PLAYER.position.x <= ENEMIES[i].position.x + 50 || PLAYER.position.x >= ENEMIES[i].position - 50) {
+      var posX = ENEMIES[i].position.x;
+      var posY = ENEMIES[i].position.y - 40;
+      var w = 50;
+      var h = 10;
+      for(var j = EnemyHealth.length; j < 2; j++) {
+        createEnemyHealth(posX, posY, w, h);
+        if(PLAYER.position.x > ENEMIES[i].position.x + 50 || PLAYER.position.x < ENEMIES[i].position - 50) {
+          EnemyHealth[i].remove();
+        }
+      }
+    }
   }
 
     //  Remove Enemies
@@ -188,11 +200,6 @@ function draw() {
     if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < PLAYER.position.x - (width / 2) || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > PLAYER.position.x + (width / 2)) {
       ENEMIES[i].remove();
     }
-  }
-
-    //  Structures
-  if(frameCount % 60 == 0) {
-
   }
 
   var min = camera.position.x - width / 2 - 75;
@@ -243,6 +250,17 @@ function createEnemy(x, y) {
   ENEMIES.add(enemy);
 
   return enemy;
+}
+
+function createEnemyHealth(x, y, w, h) {
+  var newEnemyHealth = createSprite(x, y, w, h);
+
+  newEnemyHealth.setSpeed(-1, 0);
+  newEnemyHealth.debug = true;
+  newEnemyHealth.setCollider("circle", 0, 0, 50);
+  EnemyHealth.add(newEnemyHealth);
+
+  return newEnemyHealth;
 }
 
 //Creates a cloud
