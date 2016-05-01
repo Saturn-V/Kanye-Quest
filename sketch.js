@@ -13,26 +13,29 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
 
 var FireCounter = 100;
 var FireStatus;
-    FireStatus.depth = 10;
+    // FireStatus.depth = 10;
 var EnemyHealth;
-    PlayerHealth.depth = 10;
+    // PlayerHealth.depth = 10;
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
-    // FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
+    //FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
     // PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
 
 }
 
 function setup() {
   createCanvas(700,600);
-  //Length of game strip: 4,000 pixels
+  //Length of game strip: 32,000 pixels
   //start @ x = 0
-  //end @ x = 4000
+  //end @ x = 32000
 
   //Sizing is tmp for mechanics:      width height
   GROUND = createSprite(width/2, 550, 1400, 100);
   // GROUND.addImage(GroundImg);
+
+
+
 
   //BG = createSprite();
 
@@ -40,7 +43,7 @@ function setup() {
   // PLAYER.addImage(PlayerImg);
   PLAYER.setCollider("circle", 0,0,50);
 
-  BOSS_CASTLE = createSprite(3500, 475, 400, 400);
+  BOSS_CASTLE = createSprite(31500, 475, 400, 400);
   BOSS_CASTLE.setCollider();
 
   FireStatus = createSprite(125, 50, 200, 50);
@@ -48,7 +51,8 @@ function setup() {
 
   ENEMIES = new Group();
   FIRE = new Group();
-  STRUCTURES = new Group();
+  //  Create Structures
+STRUCTURES = new Group();
   CLOUDS = new Group();
 
   EnemyHealth = new Group();
@@ -68,8 +72,8 @@ function draw() {
 
   //PLAYER and CAMERA bounds
     //  Says that CAMERA will always follow PLAYER except out of bounds
-  if(PLAYER.position.x >= 3850){
-    camera.position.x = 3850;
+  if(PLAYER.position.x >= 31850){
+    camera.position.x = 31850;
   } else if(PLAYER.position.x <= 350){
     camera.position.x = 350;
   } else {
@@ -79,8 +83,8 @@ function draw() {
     //  bounding for PLAYER
   if(PLAYER.position.x < 50) {
     PLAYER.position.x = 50;
-  } else if(PLAYER.position.x > 3850) {
-    PLAYER.position.x = 3850;
+  } else if(PLAYER.position.x > 31850) {
+    PLAYER.position.x = 31850;
   }
 
   if(PLAYER.position.y < 250) {
@@ -167,7 +171,7 @@ function draw() {
   */
 
   //Check values here
-  console.log("FireStatus.position.x: " + FireStatus.position.x);
+  console.log("castle: " + BOSS_CASTLE.visible);
 
   //Environment sprites
 
@@ -178,21 +182,100 @@ function draw() {
     createEnemy(posXenemy, posYenemy);
   }
 
+  //for every enemy
+  //if enemy is on screen && is within proximity of player
+  //create a sprite once
+
     //  Create EnemyHealth
-  for(var i = 0; i < ENEMIES.length; i++) {
-    if(PLAYER.position.x <= ENEMIES[i].position.x + 50 || PLAYER.position.x >= ENEMIES[i].position - 50) {
-      var posX = ENEMIES[i].position.x;
-      var posY = ENEMIES[i].position.y - 40;
-      var w = 50;
-      var h = 10;
-      for(var j = EnemyHealth.length; j < 2; j++) {
+  for(var i = 0; i < ENEMIES.length; i++) { //for every enemy
+
+    //if enemy is on screen  && if it is within 50 pixels of player; create health sprite for it
+    //if enemy pos x != health pos x
+    if(EnemyHealth.length < 2) {
+      if(ENEMIES[i].position.x >= PLAYER.position.x - 100 && ENEMIES[i].position.x <= PLAYER.position.x + 100) {
+        var posX = ENEMIES[i].position.x;
+        var posY = ENEMIES[i].position.y - 40;
+        var w = 50;
+        var h = 10;
         createEnemyHealth(posX, posY, w, h);
-        if(PLAYER.position.x > ENEMIES[i].position.x + 50 || PLAYER.position.x < ENEMIES[i].position - 50) {
-          EnemyHealth[i].remove();
-        }
       }
     }
   }
+
+
+
+
+  for(var i = STRUCTURES.legnth; i < 148; i++) {
+    var posXmin = 700;
+    var posXmax = 1400;
+
+    var posY = 475;
+
+    var a = random(0, 5); //arbitrary value
+    var b = random(0, 3); //arbitrary value pt. 2
+
+    var w = 50 + (25 * a);
+    var h = 50 + (25 * b);
+
+    if(i === 0) {
+      var posX = random(posXmin, posXmax);
+      createStructureSprite(posX, posY, w, h);
+
+      // var newStructure = createSprite(posX, posY, w, h);
+      //
+      // STRUCTURES.add(newStructure);
+    } else {
+      posXmin += 200 * i;
+      posXmax += 200 * i;
+      var posX = random(posXmin, posXmax);
+      reateStructureSprite(posX, posY, w, h);
+
+      // var newStructure = createSprite(posX, posY, w, h);
+      //
+      // STRUCTURES.add(newStructure);
+    }
+  }
+
+  //if there's less than x structures, do stuff until there are x structures
+
+    //posXmin is 700
+    //posXmax is 1400
+
+    //posY is 475
+
+    //a is random(0, 5)
+    //b is random(0, 3)
+
+    //w is 50 + (25 * a)
+    //min w is              50
+    //                      75
+    //                      100
+    //                      125
+    //max w is              150
+
+    //h is 50 + (25 * b)
+    //min h is              50
+    //                      75
+    //max h is              100
+
+    //if 0 structures
+      //posX is random(posXmin, posXmax)
+      //...
+      //createStructureSprite(posX, posY, w, h)
+    //else
+      //set posXmin to posXmin + 200 * i
+      //set posXmax to posXmax + 200 * i
+      //pos x is random(posXmin, posXmax)
+      //...
+      //createStructureSprite(posX, posY, w, h)
+
+      //700
+      //+ 200 * i
+      //max i is 148
+      //30600
+
+
+
 
     //  Remove Enemies
   for (var i = 0; i < ENEMIES.length; i++) {
@@ -200,6 +283,14 @@ function draw() {
       ENEMIES[i].remove();
     }
   }
+
+  //  Remove health
+for (var i = 0; i < EnemyHealth.length; i++) {
+  if(PLAYER.position.x <= EnemyHealth[i].position.x - 50 || PLAYER.position.x >= EnemyHealth[i].position.x + 50) {
+    EnemyHealth[i].remove();
+  }
+}
+
 
   var min = camera.position.x - width / 2 - 75;
   var max = camera.position.x + width / 2 + 75;
@@ -268,4 +359,13 @@ function createCloud(x, y) {
   CLOUDS.add(newCloud);
 
   return newCloud;
+}
+
+//Creates a Structure
+function createStructureSprite(x, y, w, h) {
+  var newStructure = createSprite(x, y, w, h);
+
+  STRUCTURES.add(newStructure);
+
+  return newStructure;
 }
