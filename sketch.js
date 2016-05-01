@@ -34,11 +34,84 @@ function setup() {
   GROUND = createSprite(width/2, 550, 1400, 100);
   // GROUND.addImage(GroundImg);
 
+    //  Create Structures Once
+  STRUCTURES = new Group();
+
+  for(var i = STRUCTURES.length; i < 37; i++) {
+    var a = random(0, 5); //arbitrary value
+    var b = random(0, 3); //arbitrary value pt. 2
+
+    var w = 50 + (25 * a);
+    var h = 50 + (25 * b);
+
+    var posXmin = 700;
+    var posXmax = 1400;
+
+    var posY = 475 - ((h - 50) / 2); //default for h = 50
+
+    if(i === 0) {
+      var posX = random(posXmin, posXmax);
+      createStructureSprite(posX, posY, w, h);
+
+      // var newStructure = createSprite(posX, posY, w, h);
+      //
+      // STRUCTURES.add(newStructure);
+    } else {
+      posXmin += 800 * i;
+      posXmax += 800 * i;
+      var posX = random(posXmin, posXmax);
+      createStructureSprite(posX, posY, w, h);
+
+      // var newStructure = createSprite(posX, posY, w, h);
+      //
+      // STRUCTURES.add(newStructure);
+    }
+  }
+
+    //  psuedo code stuff
+  //if there's less than x structures, do stuff until there are x structures
+
+    //posXmin is 700
+    //posXmax is 1400
+
+    //posY is 475
+
+    //a is random(0, 5)
+    //b is random(0, 3)
+
+    //w is 50 + (25 * a)
+    //min w is              50
+    //                      75
+    //                      100
+    //                      125
+    //max w is              150
+
+    //h is 50 + (25 * b)
+    //min h is              50
+    //                      75
+    //max h is              100
+
+    //if 0 structures
+      //posX is random(posXmin, posXmax)
+      //...
+      //createStructureSprite(posX, posY, w, h)
+    //else
+      //set posXmin to posXmin + 200 * i
+      //set posXmax to posXmax + 200 * i
+      //pos x is random(posXmin, posXmax)
+      //...
+      //createStructureSprite(posX, posY, w, h)
+
+      //700
+      //+ 200 * i
+      //max i is 148
+      //30600
+
   //BG = createSprite();
 
   PLAYER = createSprite(width/2, 475, 50, 50);
   // PLAYER.addImage(PlayerImg);
-  PLAYER.setCollider("circle", 0,0,50);
+  PLAYER.setCollider("SQUARE", 0,0,50);
 
   BOSS_CASTLE = createSprite(31500, 475, 400, 400);
   BOSS_CASTLE.setCollider();
@@ -49,7 +122,7 @@ function setup() {
 
   ENEMIES = new Group();
   FIRE = new Group();
-  STRUCTURES = new Group();
+
   CLOUDS = new Group();
   EnemyHealth = new Group();
 }
@@ -140,7 +213,7 @@ function draw() {
 
     //  Player spits fire
   if(keyWentDown(32) && FireCounter >= 10) {
-      var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y);
+      var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y, FireCounter * 2, FireCounter * 2);
       //fire.addImage(FireImg);
       fire.life = 40;
       fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
@@ -148,12 +221,17 @@ function draw() {
       FIRE.add(fire);
 
       FireCounter -= 10;
+
   }
 
     //  Prevents player from falling through ground (?)
   if(PLAYER.collide(GROUND)) {
     PLAYER.velocity.y = 0;
   }
+
+    //  Prevents player from going through structures + castle
+  PLAYER.collide(STRUCTURES);
+  PLAYER.collide(BOSS_CASTLE);
   /*
 
 
@@ -168,11 +246,11 @@ function draw() {
   //Environment sprites
 
     //  Create Enemies
-  for(var i = ENEMIES.length; i < 2; i++) {
-    var posXenemy = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
-    var posYenemy = 475;
-    createEnemy(posXenemy, posYenemy);
-  }
+  // for(var i = ENEMIES.length; i < 2; i++) {
+  //   var posXenemy = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
+  //   var posYenemy = 475;
+  //   createEnemy(posXenemy, posYenemy);
+  // }
 
     //  Remove Enemies
   for (var i = 0; i < ENEMIES.length; i++) {
@@ -203,78 +281,6 @@ function draw() {
       EnemyHealth[i].remove();
     }
   }
-
-
-    //  Create Structures Once
-  for(var i = STRUCTURES.legnth; i < 148; i++) {
-    var posXmin = 700;
-    var posXmax = 1400;
-
-    var posY = 475;
-
-    var a = random(0, 5); //arbitrary value
-    var b = random(0, 3); //arbitrary value pt. 2
-
-    var w = 50 + (25 * a);
-    var h = 50 + (25 * b);
-
-    if(i === 0) {
-      var posX = random(posXmin, posXmax);
-      createStructureSprite(posX, posY, w, h);
-
-      // var newStructure = createSprite(posX, posY, w, h);
-      //
-      // STRUCTURES.add(newStructure);
-    } else {
-      posXmin += 200 * i;
-      posXmax += 200 * i;
-      var posX = random(posXmin, posXmax);
-      reateStructureSprite(posX, posY, w, h);
-
-      // var newStructure = createSprite(posX, posY, w, h);
-      //
-      // STRUCTURES.add(newStructure);
-    }
-  }
-
-    //  psuedo code stuff
-  //if there's less than x structures, do stuff until there are x structures
-
-    //posXmin is 700
-    //posXmax is 1400
-
-    //posY is 475
-
-    //a is random(0, 5)
-    //b is random(0, 3)
-
-    //w is 50 + (25 * a)
-    //min w is              50
-    //                      75
-    //                      100
-    //                      125
-    //max w is              150
-
-    //h is 50 + (25 * b)
-    //min h is              50
-    //                      75
-    //max h is              100
-
-    //if 0 structures
-      //posX is random(posXmin, posXmax)
-      //...
-      //createStructureSprite(posX, posY, w, h)
-    //else
-      //set posXmin to posXmin + 200 * i
-      //set posXmax to posXmax + 200 * i
-      //pos x is random(posXmin, posXmax)
-      //...
-      //createStructureSprite(posX, posY, w, h)
-
-      //700
-      //+ 200 * i
-      //max i is 148
-      //30600
 
       //  Create Clouds
   var min = camera.position.x - width / 2 - 75;
