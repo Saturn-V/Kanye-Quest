@@ -13,15 +13,20 @@ var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
 
 var FireCounter = 100;
 var FireStatus;
+var FireDamage;
     // FireStatus.depth = 10;
 var EnemyHealth;
     // PlayerHealth.depth = 10;
+var EnemySpeed = 1;
+
+var playerStep = 4;
 
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
-    //FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
-    // PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
+    FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
+    PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
+    EnemyImg = loadImage('http://i.imgur.com/ENSyxRr.png');
 }
 
 function setup() {
@@ -110,7 +115,7 @@ function setup() {
   //BG = createSprite();
 
   PLAYER = createSprite(width/2, 475, 50, 50);
-  // PLAYER.addImage(PlayerImg);
+  PLAYER.addImage(PlayerImg);
   PLAYER.setCollider("SQUARE", 0,0,50);
 
   BOSS_CASTLE = createSprite(31500, 475, 400, 400);
@@ -118,7 +123,7 @@ function setup() {
 
   FireStatus = createSprite(125, 50, 200, 50);
 
-  PlayerHealth = createSprite(125, 110, 200, 50);
+  PlayerHealth = createSprite(125, 50, 400, 50);
 
   ENEMIES = new Group();
   FIRE = new Group();
@@ -134,7 +139,7 @@ function draw() {
 
   //Player GUI movement
   FireStatus.position.x = camera.position.x + (FireCounter - 100) - width/2 + 125;
-  PlayerHealth.position.x = camera.position.x - width/2 + 125;
+  PlayerHealth.position.x = camera.position.x + width/4 - 55;
 
   FireStatus.width = FireCounter * 2;
 
@@ -185,6 +190,11 @@ function draw() {
 
   //Player Abilities
 
+  //  Jump
+if(keyWentDown(87)) {
+  PLAYER.velocity.y = JUMP;
+}
+
     //  Left | Right
   if(keyDown(65)) {
     PLAYER.position.x -= playerStep;
@@ -192,11 +202,6 @@ function draw() {
   } else if(keyDown(68)) {
     PLAYER.position.x += playerStep;
     PLAYER.mirrorX(-1);
-  }
-
-    //  Jump
-  if(keyWentDown(87)) {
-    PLAYER.velocity.y = JUMP;
   }
 
     //  Sprinting
@@ -214,7 +219,7 @@ function draw() {
     //  Player spits fire
   if(keyWentDown(32) && FireCounter >= 10) {
       var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y, FireCounter * 2, FireCounter * 2);
-      //fire.addImage(FireImg);
+      fire.addImage(FireImg);
       fire.life = 40;
       fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
       fire.mirrorX(-1 * PLAYER.mirrorX());
@@ -241,46 +246,83 @@ function draw() {
   */
 
   //Check values here
-  console.log("castle: " + BOSS_CASTLE.visible);
 
   //Environment sprites
 
-    //  Create Enemies
-  // for(var i = ENEMIES.length; i < 2; i++) {
-  //   var posXenemy = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
-  //   var posYenemy = 475;
-  //   createEnemy(posXenemy, posYenemy);
-  // }
+    //  Hide or reveal structures
+  for(var i = 0; i < STRUCTURES.length; i++) {
+    if(STRUCTURES[i].position.x >= camera.position.x - 400 && STRUCTURES[i].position.x <= camera.position.x + 400) {
+      STRUCTURES[i].visible = true;
+    }else{
+      STRUCTURES[i].visible = false;
+    }
+  }
 
-    //  Remove Enemies
-  for (var i = 0; i < ENEMIES.length; i++) {
-    if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < PLAYER.position.x - (width / 2) || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > PLAYER.position.x + (width / 2)) {
+    //  Create Enemies and health
+  for(var i = ENEMIES.length; i < 35; i++) { //for every created enemy
+    var posXmin = 700;
+    var posXmax = 1400;
+
+    var x;
+    var yEnemy = 475;
+    var yHealth = yEnemy - 40;
+    var w = 50;
+    var hEnemy = 50;
+    var hHealth = hEnemy - 40;
+
+    if(i === 0) {
+      x = random(posXmin, posXmax);
+      createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
+    } else {
+      posXmin += 800 * i;
+      posXmax += 800 * i;
+      x = random(posXmin, posXmax);
+      createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
+    }
+  }
+
+  FireDamage = FireCounter * .01;
+
+    //  Hide or reveal Enemies and health
+  for(var i = 0; i < ENEMIES.length; i++) {
+    if(ENEMIES[i].position.x >= camera.position.x - 350 && ENEMIES[i].position.x <= camera.position.x + 350) {
+      ENEMIES[i].visible = true;
+      if(ENEMIES[i].position.x >= camera.position.x - 250 && ENEMIES[i].position.x <= camera.position.x + 250) {
+         EnemyHealth[i].visible = true;
+         //FEATURE: Add blinking health bar when enemy is dying
+      } else {
+        EnemyHealth[i].visible = false;
+      }
+    } else {
+      ENEMIES[i].visible = false;
+      EnemyHealth[i].visible = false;
+    }
+
+    if(ENEMIES[i].overlap(FIRE) && EnemyHealth[i].overlap(FIRE)) {
+      EnemyHealth[i].width -= FireDamage;
+      EnemyHealth[i].position.x -= FireDamage / 2;
+    }
+
+    if(EnemyHealth[i].width <= 1) {
+      EnemyHealth[i].remove();
       ENEMIES[i].remove();
     }
+
   }
 
-    //  Create EnemyHealth
-  for(var i = 0; i < ENEMIES.length; i++) { //for every enemy
-
-    //if enemy is on screen  && if it is within 50 pixels of player; create health sprite for it
-    //if enemy pos x != health pos x
-    if(EnemyHealth.length < 2) {
-      if(ENEMIES[i].position.x >= PLAYER.position.x - 100 && ENEMIES[i].position.x <= PLAYER.position.x + 100) {
-        var posX = ENEMIES[i].position.x;
-        var posY = ENEMIES[i].position.y - 40;
-        var w = 50;
-        var h = 10;
-        createEnemyHealth(posX, posY, w, h);
-      }
-    }
-  }
+  //  Remove Enemies
+// for (var i = 0; i < ENEMIES.length; i++) {
+//   if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < PLAYER.position.x - (width / 2) || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > PLAYER.position.x + (width / 2)) {
+//     ENEMIES[i].remove();
+//   }
+// }
 
     //  Remove EnemyHealth
-  for (var i = 0; i < EnemyHealth.length; i++) {
-    if(PLAYER.position.x <= EnemyHealth[i].position.x - 50 || PLAYER.position.x >= EnemyHealth[i].position.x + 50) {
-      EnemyHealth[i].remove();
-    }
-  }
+  // for (var i = 0; i < EnemyHealth.length; i++) {
+  //   if(PLAYER.position.x <= EnemyHealth[i].position.x - 100 || PLAYER.position.x >= EnemyHealth[i].position.x + 100) {
+  //     EnemyHealth[i].remove();
+  //   }
+  // }
 
       //  Create Clouds
   var min = camera.position.x - width / 2 - 75;
@@ -314,38 +356,38 @@ function draw() {
   */
 
   //Debug
-  GROUND.debug = true;
+  GROUND.debug = false;
   PLAYER.debug = true;
-  BOSS_CASTLE.debug = true;
+  BOSS_CASTLE.debug = false;
 
 
   drawSprites();
 }
 
-//Creates an enemy
-function createEnemy(x, y) {
-  var enemy = createSprite(x, y, 50, 50);
-  //add img for enemy here (?)
+//Creates an Enemy and Health
+function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
+  var newEnemy = createSprite(x, yEnemy, w, hEnemy);
+  var newHealth = createSprite(x, yHealth, w, hHealth);
+  var a = random(1, 3)
+  if (a === 1) {
+    EnemySpeed = -1
+    newEnemy.setSpeed(EnemySpeed, 0);
+    newHealth.setSpeed(EnemySpeed, 0);
+  }else{
+    newEnemy.setSpeed(EnemySpeed, 0);
+    newHealth.setSpeed(EnemySpeed, 0);
+  }
 
-  enemy.setSpeed(-1, 0);
-  enemy.debug = true;
-  enemy.setCollider("circle", 0,0,50);
-  ENEMIES.add(enemy);
+  // newEnemy.debug = true;
+  // newHealth.debug = true;
+  newEnemy.setCollider("square", 0,0,50);
+  newHealth.setCollider("square", 0, 0, 50, 10);
+  ENEMIES.add(newEnemy);
+  EnemyHealth.add(newHealth);
 
-  return enemy;
+  return newEnemy;
 }
 
-//Creates Enemy Health Bar
-function createEnemyHealth(x, y, w, h) {
-  var newEnemyHealth = createSprite(x, y, w, h);
-
-  newEnemyHealth.setSpeed(-1, 0);
-  newEnemyHealth.debug = true;
-  newEnemyHealth.setCollider("circle", 0, 0, 50);
-  EnemyHealth.add(newEnemyHealth);
-
-  return newEnemyHealth;
-}
 
 //Creates a cloud
 function createCloud(x, y) {
