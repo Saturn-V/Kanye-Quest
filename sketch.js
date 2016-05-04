@@ -10,8 +10,10 @@ var GRAVITY = .4; //Constant
 var JUMP = -10; //constant
 var GROUND, BG, PLAYER, BOSS_CASTLE, ENEMIES, FIRE, STRUCTURES, CLOUDS; //Sprites
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
-var paused = false;
-
+//left/right bounds respectively
+var start = 0;
+var end   = 32000;
+//firecball related
 var FireCounter = 100;
 var FireStatus;
     // FireStatus.depth = 10;
@@ -58,9 +60,7 @@ function setup() {
       //
       // STRUCTURES.add(newStructure);
     } else {
-      posXmin += 800 * i;
-      posXmax += 800 * i;
-      var posX = random(posXmin, posXmax);
+      var posX = random(posXmin, posXmax) + 800 * i;
       createStructureSprite(posX, posY, w, h);
 
       // var newStructure = createSprite(posX, posY, w, h);
@@ -141,19 +141,19 @@ function draw() {
   //PLAYER and CAMERA bounds
 
     //  Says that CAMERA will always follow PLAYER except out of bounds
-  if(PLAYER.position.x >= 31850){
-    camera.position.x = 31850;
-  } else if(PLAYER.position.x <= 350){
-    camera.position.x = 350;
+  if(PLAYER.position.x > end - width/2){
+    camera.position.x = end - width/2;
+  } else if(PLAYER.position.x < start + width/2){
+    camera.position.x = start + width/2;
   } else {
     camera.position.x = PLAYER.position.x;
   }
 
     //  bounding for PLAYER
-  if(PLAYER.position.x < 50) {
-    PLAYER.position.x = 50;
-  } else if(PLAYER.position.x > 31850) {
-    PLAYER.position.x = 31850;
+  if(PLAYER.position.x < start + PLAYER.width/2) {
+    PLAYER.position.x = PLAYER.width/2;
+  } else if(PLAYER.position.x > end - PLAYER.width/2) {
+    PLAYER.position.x = end - PLAYER.width/2;
   }
 
   if(PLAYER.position.y < 250) {
@@ -227,14 +227,15 @@ function draw() {
 
 
   //  Prevents player from falling through ground (?)
-
-  if(PLAYER.collide(GROUND)) {
-    PLAYER.velocity.y = 0;
+  //  Prevents player from going through structures + castle
+  //  or increasing their y velocity infinitely
+  if(PLAYER.collide(GROUND) || PLAYER.collide(STRUCTURES) || PLAYER.collide(BOSS_CASTLE)) {
+    if(PLAYER.velocity.y > 0) //positive y velocity is falling
+      PLAYER.velocity.y = 0;
   }
 
-    //  Prevents player from going through structures + castle
-  PLAYER.collide(STRUCTURES);
-  PLAYER.collide(BOSS_CASTLE);
+    
+
   /*
 
 
@@ -288,7 +289,7 @@ function draw() {
     //if enemy is on screen  && if it is within 50 pixels of player; create health sprite for it
     //if enemy pos x != health pos x
     if(EnemyHealth.length < 2) {
-      if(ENEMIES[i].position.x >= PLAYER.position.x - 100 && ENEMIES[i].position.x <= PLAYER.position.x + 100) {
+      if(Math.abs(ENEMIES[i].position.x - PLAYER.position.x) < 50) {
         var posX = ENEMIES[i].position.x;
         var posY = ENEMIES[i].position.y - 40;
         var w = 50;
@@ -344,15 +345,6 @@ function draw() {
 
   drawSprites();
 }
-/* attempted pause
-function keyWentDown("p") {
-    if(paused)
-      noLoop();
-    else
-      loop();
-    paused = !paused;
-}
-*/
 //Creates an enemy
 function createEnemy(x, y) {
   var enemy = createSprite(x, y, 50, 50);
