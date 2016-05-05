@@ -10,16 +10,24 @@ var GRAVITY = .4; //Constant
 var JUMP = -10; //constant
 var GROUND, BG, PLAYER, BOSS_CASTLE, ENEMIES, FIRE, STRUCTURES, CLOUDS; //Sprites
 var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
-
+//left/right bounds respectively
+var start = 0;
+var end   = 32000;
+//firecball related
 var FireCounter = 100;
 var FireStatus;
 var FireDamage;
     // FireStatus.depth = 10;
 var EnemyHealth;
     // PlayerHealth.depth = 10;
+<<<<<<< HEAD
 var EnemySpeed = 1;
 
 var playerStep = 4;
+=======
+var playerStep = 4;
+
+>>>>>>> master
 
 function preload() {
 
@@ -58,9 +66,7 @@ function setup() {
       var posX = random(posXmin, posXmax);
       createStructureSprite(posX, posY, w, h);
     } else {
-      posXmin += 800 * i;
-      posXmax += 800 * i;
-      var posX = random(posXmin, posXmax);
+      var posX = random(posXmin, posXmax) + 800 * i;
       createStructureSprite(posX, posY, w, h);
     }
   }
@@ -153,7 +159,6 @@ function draw() {
   background(100, 150, 200);
   textAlign(CENTER);
   PLAYER.velocity.y += GRAVITY;
-
   //Player GUI movement
   FireStatus.position.x = camera.position.x + (FireCounter - 100) - width/2 + 125;
   PlayerHealth.position.x = camera.position.x + width/4 - 55;
@@ -163,19 +168,19 @@ function draw() {
   //PLAYER and CAMERA bounds
 
     //  Says that CAMERA will always follow PLAYER except out of bounds
-  if(PLAYER.position.x >= 31850){
-    camera.position.x = 31850;
-  } else if(PLAYER.position.x <= 350){
-    camera.position.x = 350;
+  if(PLAYER.position.x > end - width/2){
+    camera.position.x = end - width/2;
+  } else if(PLAYER.position.x < start + width/2){
+    camera.position.x = start + width/2;
   } else {
     camera.position.x = PLAYER.position.x;
   }
 
     //  bounding for PLAYER
-  if(PLAYER.position.x < 50) {
-    PLAYER.position.x = 50;
-  } else if(PLAYER.position.x > 31850) {
-    PLAYER.position.x = 31850;
+  if(PLAYER.position.x < start + PLAYER.width/2) {
+    PLAYER.position.x = PLAYER.width/2;
+  } else if(PLAYER.position.x > end - PLAYER.width/2) {
+    PLAYER.position.x = end - PLAYER.width/2;
   }
 
   if(PLAYER.position.y < 250) {
@@ -223,9 +228,11 @@ if(keyWentDown(87)) {
 
     //  Sprinting
   if(keyDown(16)) { //SHIFT keycode = 16
-    playerStep = 9;
+    if(playerStep < 9) //smooth acceleration
+      playerStep *= 1.1;
   } else {
-    playerStep = 4;
+    if(playerStep > 4)
+      playerStep /= 1.1;
   }
 
     //  Limits Rate Of Fire
@@ -239,21 +246,25 @@ if(keyWentDown(87)) {
       //fire.addImage(FireImg);
       fire.life = 40;
       fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
+      fire.setCollider("circle", 0, 0, 50)
       fire.mirrorX(-1 * PLAYER.mirrorX());
+      
       FIRE.add(fire);
-
       FireCounter -= 10;
 
   }
 
-    //  Prevents player from falling through ground (?)
-  if(PLAYER.collide(GROUND)) {
-    PLAYER.velocity.y = 0;
+
+  //  Prevents player from falling through ground (?)
+  //  Prevents player from going through structures + castle
+  //  or increasing their y velocity infinitely
+  if(PLAYER.collide(GROUND) || PLAYER.collide(STRUCTURES) || PLAYER.collide(BOSS_CASTLE)) {
+    if(PLAYER.velocity.y > 0) //positive y velocity is falling
+      PLAYER.velocity.y = 0;
   }
 
-    //  Prevents player from going through structures + castle
-  PLAYER.collide(STRUCTURES);
-  PLAYER.collide(BOSS_CASTLE);
+    
+
   /*
 
 
@@ -265,7 +276,10 @@ if(keyWentDown(87)) {
   //Check values here
 
   //Environment sprites
+  var min = camera.position.x - width / 2 - 75;
+  var max = camera.position.x + width / 2 + 75;
 
+<<<<<<< HEAD
     //  Hide or reveal structures
   for(var i = 0; i < STRUCTURES.length; i++) {
     if(STRUCTURES[i].position.x + (STRUCTURES[i].width / 2) >= camera.position.x - 350 && STRUCTURES[i].position.x - (STRUCTURES[i].width / 2) <= camera.position.x + 350) {
@@ -279,6 +293,55 @@ if(keyWentDown(87)) {
   for(var i = ENEMIES.length; i < 35; i++) { //for every created enemy
     var posXmin = 700;
     var posXmax = 1400;
+=======
+    //  Create Enemies
+  for(var i = ENEMIES.length; i < 2; i++) {
+    var posX = random(min, max);
+    var posY = 475;
+    createEnemy(posX, posY);
+  }
+  // for(var i = ENEMIES.length; i < 2; i++) {
+  //   var posXenemy = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
+  //   var posYenemy = 475;
+  //   createEnemy(posXenemy, posYenemy);
+  // 
+
+    //  Remove Enemies
+  for (var i = 0; i < ENEMIES.length; i++) {
+    if(ENEMIES[i].overlap(FIRE)) {
+      ENEMIES[i].height -= 1;
+      ENEMIES[i].width  -= 1;
+      //positioning
+      ENEMIES[i].position.y = 500 - ENEMIES[i].height/2;
+
+      if(ENEMIES[i].width < 12)
+        ENEMIES[i].remove();
+    } else if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < min || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > max) {
+      ENEMIES[i].remove();
+    } 
+  }
+
+
+  //Clouds
+
+    //  Create Clouds
+
+    //  Create EnemyHealth
+  for(var i = 0; i < ENEMIES.length; i++) { //for every enemy
+
+    //if enemy is on screen  && if it is within 50 pixels of player; create health sprite for it
+    //if enemy pos x != health pos x
+    if(EnemyHealth.length < 2) {
+      if(Math.abs(ENEMIES[i].position.x - PLAYER.position.x) < 50) {
+        var posX = ENEMIES[i].position.x;
+        var posY = ENEMIES[i].position.y - 40;
+        var w = 50;
+        var h = 10;
+        createEnemyHealth(posX, posY, w, h);
+      }
+    }
+  }
+>>>>>>> master
 
     var x;
     var yEnemy = 475;
@@ -315,10 +378,15 @@ if(keyWentDown(87)) {
       EnemyHealth[i].visible = false;
     }
 
+<<<<<<< HEAD
     if(ENEMIES[i].overlap(FIRE) && EnemyHealth[i].overlap(FIRE)) {
       EnemyHealth[i].width -= FireDamage;
       EnemyHealth[i].position.x -= FireDamage / 2;
     }
+=======
+
+  for(var i = CLOUDS.length; i < 21; i++) {
+>>>>>>> master
 
     if(EnemyHealth[i].width <= 1) {
       EnemyHealth[i].remove();
@@ -353,9 +421,9 @@ if(keyWentDown(87)) {
   PLAYER.debug = true;
   BOSS_CASTLE.debug = false;
 
-
   drawSprites();
 }
+<<<<<<< HEAD
 
 //Creates an Enemy and Health
 function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
@@ -370,6 +438,12 @@ function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
     newEnemy.setSpeed(EnemySpeed, 0);
     newHealth.setSpeed(EnemySpeed, 0);
   }
+=======
+//Creates an enemy
+function createEnemy(x, y) {
+  var enemy = createSprite(x, y, 50, 50);
+  //add img for enemy here (?)
+>>>>>>> master
 
   // newEnemy.debug = true;
   // newHealth.debug = true;
