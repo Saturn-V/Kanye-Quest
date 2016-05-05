@@ -19,6 +19,8 @@ var FireStatus;
     // FireStatus.depth = 10;
 var EnemyHealth;
     // PlayerHealth.depth = 10;
+var playerStep = 4;
+
 
 function preload() {
 
@@ -201,9 +203,11 @@ function draw() {
 
     //  Sprinting
   if(keyDown(16)) { //SHIFT keycode = 16
-    playerStep = 9;
+    if(playerStep < 9) //smooth acceleration
+      playerStep *= 1.1;
   } else {
-    playerStep = 4;
+    if(playerStep > 4)
+      playerStep /= 1.1;
   }
 
     //  Limits Rate Of Fire
