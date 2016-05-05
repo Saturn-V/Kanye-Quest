@@ -29,6 +29,7 @@ var playerStep = 4;
 
 
 
+
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
@@ -249,7 +250,7 @@ if(keyWentDown(87)) {
       fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
       fire.setCollider("circle", 0, 0, 50)
       fire.mirrorX(-1 * PLAYER.mirrorX());
-      
+
       FIRE.add(fire);
       FireCounter -= 10;
 
@@ -259,12 +260,13 @@ if(keyWentDown(87)) {
   //  Prevents player from falling through ground (?)
   //  Prevents player from going through structures + castle
   //  or increasing their y velocity infinitely
+
   if(PLAYER.collide(GROUND) || PLAYER.collide(STRUCTURES) || PLAYER.collide(BOSS_CASTLE)) {
     if(PLAYER.velocity.y > 0) //positive y velocity is falling
       PLAYER.velocity.y = 0;
   }
 
-    
+
 
   /*
 
@@ -280,7 +282,6 @@ if(keyWentDown(87)) {
   var min = camera.position.x - width / 2 - 75;
   var max = camera.position.x + width / 2 + 75;
 
-<<<<<<< HEAD
     //  Hide or reveal structures
   for(var i = 0; i < STRUCTURES.length; i++) {
     if(STRUCTURES[i].position.x + (STRUCTURES[i].width / 2) >= camera.position.x - 350 && STRUCTURES[i].position.x - (STRUCTURES[i].width / 2) <= camera.position.x + 350) {
@@ -294,55 +295,6 @@ if(keyWentDown(87)) {
   for(var i = ENEMIES.length; i < 35; i++) { //for every created enemy
     var posXmin = 700;
     var posXmax = 1400;
-=======
-    //  Create Enemies
-  for(var i = ENEMIES.length; i < 2; i++) {
-    var posX = random(min, max);
-    var posY = 475;
-    createEnemy(posX, posY);
-  }
-  // for(var i = ENEMIES.length; i < 2; i++) {
-  //   var posXenemy = random(PLAYER.position.x - (width/2), PLAYER.position.x + (width/2));
-  //   var posYenemy = 475;
-  //   createEnemy(posXenemy, posYenemy);
-  // 
-
-    //  Remove Enemies
-  for (var i = 0; i < ENEMIES.length; i++) {
-    if(ENEMIES[i].overlap(FIRE)) {
-      ENEMIES[i].height -= 1;
-      ENEMIES[i].width  -= 1;
-      //positioning
-      ENEMIES[i].position.y = 500 - ENEMIES[i].height/2;
-
-      if(ENEMIES[i].width < 12)
-        ENEMIES[i].remove();
-    } else if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < min || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > max) {
-      ENEMIES[i].remove();
-    } 
-  }
-
-
-  //Clouds
-
-    //  Create Clouds
-
-    //  Create EnemyHealth
-  for(var i = 0; i < ENEMIES.length; i++) { //for every enemy
-
-    //if enemy is on screen  && if it is within 50 pixels of player; create health sprite for it
-    //if enemy pos x != health pos x
-    if(EnemyHealth.length < 2) {
-      if(Math.abs(ENEMIES[i].position.x - PLAYER.position.x) < 50) {
-        var posX = ENEMIES[i].position.x;
-        var posY = ENEMIES[i].position.y - 40;
-        var w = 50;
-        var h = 10;
-        createEnemyHealth(posX, posY, w, h);
-      }
-    }
-  }
->>>>>>> master
 
     var x;
     var yEnemy = 475;
@@ -379,15 +331,10 @@ if(keyWentDown(87)) {
       EnemyHealth[i].visible = false;
     }
 
-<<<<<<< HEAD
     if(ENEMIES[i].overlap(FIRE) && EnemyHealth[i].overlap(FIRE)) {
       EnemyHealth[i].width -= FireDamage;
       EnemyHealth[i].position.x -= FireDamage / 2;
     }
-=======
-
-  for(var i = CLOUDS.length; i < 21; i++) {
->>>>>>> master
 
     if(EnemyHealth[i].width <= 1) {
       EnemyHealth[i].remove();
@@ -424,7 +371,6 @@ if(keyWentDown(87)) {
 
   drawSprites();
 }
-<<<<<<< HEAD
 
 //Creates an Enemy and Health
 function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
@@ -439,12 +385,6 @@ function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
     newEnemy.setSpeed(EnemySpeed, 0);
     newHealth.setSpeed(EnemySpeed, 0);
   }
-=======
-//Creates an enemy
-function createEnemy(x, y) {
-  var enemy = createSprite(x, y, 50, 50);
-  //add img for enemy here (?)
->>>>>>> master
 
   // newEnemy.debug = true;
   // newHealth.debug = true;
