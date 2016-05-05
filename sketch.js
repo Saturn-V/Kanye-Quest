@@ -20,14 +20,14 @@ var FireDamage;
     // FireStatus.depth = 10;
 var EnemyHealth;
     // PlayerHealth.depth = 10;
-<<<<<<< HEAD
+
 var EnemySpeed = 1;
 
 var playerStep = 4;
-=======
-var playerStep = 4;
 
->>>>>>> master
+
+
+
 
 function preload() {
 
@@ -50,7 +50,7 @@ function setup() {
     //  Create Structures Once
   STRUCTURES = new Group();
 
-  for(var i = STRUCTURES.length; i < 37; i++) {
+  for(var i = 0; i < 37; i++) {
     var a = random(0, 5); //arbitrary value
     var b = random(0, 3); //arbitrary value pt. 2
 
@@ -158,6 +158,7 @@ function setup() {
 function draw() {
   background(100, 150, 200);
   textAlign(CENTER);
+
   PLAYER.velocity.y += GRAVITY;
   //Player GUI movement
   FireStatus.position.x = camera.position.x + (FireCounter - 100) - width/2 + 125;
