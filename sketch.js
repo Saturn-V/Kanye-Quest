@@ -24,8 +24,8 @@ var playerStep = 4;
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
-    FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
-    PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
+    //FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
+    // PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
     EnemyImg = loadImage('http://i.imgur.com/ENSyxRr.png');
 }
 
@@ -57,19 +57,11 @@ function setup() {
     if(i === 0) {
       var posX = random(posXmin, posXmax);
       createStructureSprite(posX, posY, w, h);
-
-      // var newStructure = createSprite(posX, posY, w, h);
-      //
-      // STRUCTURES.add(newStructure);
     } else {
       posXmin += 800 * i;
       posXmax += 800 * i;
       var posX = random(posXmin, posXmax);
       createStructureSprite(posX, posY, w, h);
-
-      // var newStructure = createSprite(posX, posY, w, h);
-      //
-      // STRUCTURES.add(newStructure);
     }
   }
 
@@ -112,10 +104,36 @@ function setup() {
       //max i is 148
       //30600
 
+      //  Create Clouds
+    CLOUDS = new Group();
+
+    for(var i = CLOUDS.length; i < 80; i++) {
+      var a = random(0, 5); //arbitrary value
+      var b = random(0, 2); //arbitrary value pt. 2
+
+      var w = 50 + (25 * a);
+      var h = 50 + (25 * b);
+
+      var posXmin = 700;
+      var posXmax = 1400;
+
+      var posY = random(height / 3.5, 0);
+
+      if(i === 0) {
+        var posX = random(posXmin, posXmax);
+        createCloudSprite(posX, posY, w, h);
+      } else {
+        posXmin += 800 * i;
+        posXmax += 800 * i;
+        var posX = random(posXmin, posXmax);
+        createCloudSprite(posX, posY, w, h);
+      }
+    }
+
   //BG = createSprite();
 
   PLAYER = createSprite(width/2, 475, 50, 50);
-  PLAYER.addImage(PlayerImg);
+  // PLAYER.addImage(PlayerImg);
   PLAYER.setCollider("SQUARE", 0,0,50);
 
   BOSS_CASTLE = createSprite(31500, 475, 400, 400);
@@ -128,7 +146,6 @@ function setup() {
   ENEMIES = new Group();
   FIRE = new Group();
 
-  CLOUDS = new Group();
   EnemyHealth = new Group();
 }
 
@@ -219,7 +236,7 @@ if(keyWentDown(87)) {
     //  Player spits fire
   if(keyWentDown(32) && FireCounter >= 10) {
       var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y, FireCounter * 2, FireCounter * 2);
-      fire.addImage(FireImg);
+      //fire.addImage(FireImg);
       fire.life = 40;
       fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
       fire.mirrorX(-1 * PLAYER.mirrorX());
@@ -251,7 +268,7 @@ if(keyWentDown(87)) {
 
     //  Hide or reveal structures
   for(var i = 0; i < STRUCTURES.length; i++) {
-    if(STRUCTURES[i].position.x >= camera.position.x - 400 && STRUCTURES[i].position.x <= camera.position.x + 400) {
+    if(STRUCTURES[i].position.x + (STRUCTURES[i].width / 2) >= camera.position.x - 350 && STRUCTURES[i].position.x - (STRUCTURES[i].width / 2) <= camera.position.x + 350) {
       STRUCTURES[i].visible = true;
     }else{
       STRUCTURES[i].visible = false;
@@ -285,9 +302,9 @@ if(keyWentDown(87)) {
 
     //  Hide or reveal Enemies and health
   for(var i = 0; i < ENEMIES.length; i++) {
-    if(ENEMIES[i].position.x >= camera.position.x - 350 && ENEMIES[i].position.x <= camera.position.x + 350) {
+    if(ENEMIES[i].position.x  + 25 >= camera.position.x - 350 && ENEMIES[i].position.x - 25 <= camera.position.x + 350) {
       ENEMIES[i].visible = true;
-      if(ENEMIES[i].position.x >= camera.position.x - 250 && ENEMIES[i].position.x <= camera.position.x + 250) {
+      if(ENEMIES[i].position.x >= camera.position.x - 200 && ENEMIES[i].position.x <= camera.position.x + 200) {
          EnemyHealth[i].visible = true;
          //FEATURE: Add blinking health bar when enemy is dying
       } else {
@@ -308,43 +325,19 @@ if(keyWentDown(87)) {
       ENEMIES[i].remove();
     }
 
-  }
-
-  //  Remove Enemies
-// for (var i = 0; i < ENEMIES.length; i++) {
-//   if(ENEMIES[i].position.x + (ENEMIES[i].width / 2) < PLAYER.position.x - (width / 2) || ENEMIES[i].position.x - (ENEMIES[i].width / 2) > PLAYER.position.x + (width / 2)) {
-//     ENEMIES[i].remove();
-//   }
-// }
-
-    //  Remove EnemyHealth
-  // for (var i = 0; i < EnemyHealth.length; i++) {
-  //   if(PLAYER.position.x <= EnemyHealth[i].position.x - 100 || PLAYER.position.x >= EnemyHealth[i].position.x + 100) {
-  //     EnemyHealth[i].remove();
-  //   }
-  // }
-
-      //  Create Clouds
-  var min = camera.position.x - width / 2 - 75;
-  var max = camera.position.x + width / 2 + 75;
-
-  for(var i = CLOUDS.length; i < 21; i++) {
-
-    var posY = random(height / 3, 0);
-
-    if(i <= 10) {
-      // generates an x position that is onscreen
-      var posX = random(min, max);
-    } else {
-      // generates an x position to the next screen over, depending on which way the player is facing
-      var posX = random(min - width * PLAYER.mirrorX(), max - width * PLAYER.mirrorX());
+      //  Damages player if player runs into enemy
+    if(PLAYER.position.x + 25 >= ENEMIES[i].position.x - 25 || PLAYER.position.x - 25 <= ENEMIES[i].position.x + 25) {
+      // PLAYER.velocity *= -2;
+      // PLAYER.velocity *= -1;
     }
-    createCloud(posX, posY);
   }
-    //  Remove Clouds
+
+    //  Hide or reveal Clouds
   for(var i = 0; i < CLOUDS.length; i++) {
-    if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) < min - width - (width * PLAYER.mirrorX()) || CLOUDS[i].position.x - (CLOUDS[i].width / 2) > max + width - (width * PLAYER.mirrorX())) {
-      CLOUDS[i].remove();
+    if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) >= camera.position.x - 350 && CLOUDS[i].position.x - (CLOUDS[i].width / 2) <= camera.position.x + 350) {
+      CLOUDS[i].visible = true;
+    }else{
+      CLOUDS[i].visible = false;
     }
   }
   /*
@@ -390,8 +383,8 @@ function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
 
 
 //Creates a cloud
-function createCloud(x, y) {
-  var newCloud = createSprite(x ,y, random(50, 75), random(16, 32));
+function createCloudSprite(x, y, w, h) {
+  var newCloud = createSprite(x ,y, w, h);
       newCloud.depth = y / 100;
   // newCloud.setCollider("rectangle");
   CLOUDS.add(newCloud);
