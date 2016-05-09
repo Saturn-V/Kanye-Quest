@@ -293,11 +293,16 @@ function draw() {
       // Player.velocity *= -1;
     }
 
-    // if(Enemies[i].visible && Structures[i].visible) {
-    //   Enemies[i].collide(Structures)
-    //   EnemiesHealth[i].collide(Structures)
-    //   console.log("works?");
-    // }
+    if(Enemies[i].visible && Structures[i].visible && Enemies[i].collide(Structures) && EnemiesHealth[i].collide(Structures)) {
+      if(Enemies[i].setVelocity() === -1) {
+        Enemies[i].setSpeed(1, 180);
+        EnemiesHealth[i].setSpeed(1, 180);
+      } else if(Enemies[i].setVelocity() === 1){
+        Enemies[i].setSpeed(-1, 180);
+        EnemiesHealth[i].setSpeed(-1, 180);
+      }
+      console.log("works?");
+    }
 
   }
 
