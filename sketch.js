@@ -25,6 +25,7 @@ var PlayerHealth;
 
   //some constants
 var playerStep = 4;
+var EnemySpeed = playerStep;
 
   //  For Images and sounds
 function preload() {
@@ -240,7 +241,7 @@ function draw() {
   var max = camera.position.x + width / 2 + 75;
 
     //  Create Enemies and health
-  for(var i = Enemies.length; i < 35; i++) {
+  for(var i = Enemies.length; i < 2; i++) {
     var posXmin = 700;
     var posXmax = 1400;
 
@@ -277,6 +278,10 @@ function draw() {
       EnemiesHealth[i].visible = false;
     }
 
+    //Sets speed of enemy sprites
+      Enemies[i].position.x += EnemySpeed * -1;
+      EnemiesHealth[i].position.x += EnemySpeed * -1;
+
     if(Enemies[i].overlap(Fire) && EnemiesHealth[i].overlap(Fire)) {
       EnemiesHealth[i].width -= FireDamage;
       EnemiesHealth[i].position.x -= FireDamage / 2;
@@ -293,17 +298,16 @@ function draw() {
       // Player.velocity *= -1;
     }
 
-    if(Enemies[i].visible && Structures[i].visible && Enemies[i].collide(Structures) && EnemiesHealth[i].collide(Structures)) {
-      if(Enemies[i].setVelocity() === -1) {
-        Enemies[i].setSpeed(1, 180);
-        EnemiesHealth[i].setSpeed(1, 180);
-      } else if(Enemies[i].setVelocity() === 1){
-        Enemies[i].setSpeed(-1, 180);
-        EnemiesHealth[i].setSpeed(-1, 180);
+    // if(Enemies[i].visible && Structures[i].visible) {
+      if(Enemies[i].collide(Structures) || EnemiesHealth[i].collide(Structures)) {
+        EnemySpeed = EnemySpeed * -1;
+        // Enemies[i] = EnemySpeed;
+        // EnemiesHealth[i] += EnemySpeed;
+        console.log("works?");
       }
-      console.log("works?");
-    }
-
+    // }
+    // console.log("pos x enemy[0]: " + Enemies[0].position.x);
+    // console.log("pos x enemy[1]: " + Enemies[1].position.x);
   }
 
     //  Hide or reveal pre created structures
@@ -342,16 +346,6 @@ function draw() {
 function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
   var newEnemy = createSprite(x, yEnemy, w, hEnemy);
   var newHealth = createSprite(x, yHealth, w, hHealth);
-  var EnemySpeed = 1;
-  var a = random(0, 3);
-  if (a === 1) {
-    EnemySpeed = -1
-    newEnemy.setSpeed(EnemySpeed, 0);
-    newHealth.setSpeed(EnemySpeed, 0);
-  }else{
-    newEnemy.setSpeed(EnemySpeed, 180);
-    newHealth.setSpeed(EnemySpeed, 180);
-  }
 
   // newEnemy.debug = true;
   // newHealth.debug = true;
@@ -380,7 +374,7 @@ function createCloudSprite(x, y, w, h) {
 //Creates a Structure
 function createStructureSprite(x, y, w, h) {
   var newStructure = createSprite(x, y, w, h);
-
+  newStructure.setCollider("square", 0, 0, w, h);
   Structures.add(newStructure);
 
   return newStructure;
