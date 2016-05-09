@@ -8,52 +8,60 @@
 
 var GRAVITY = .4; //Constant
 var JUMP = -10; //constant
-var GROUND, BG, PLAYER, BOSS_CASTLE, ENEMIES, FIRE, STRUCTURES, CLOUDS; //Sprites
-var GroundImg, BgImg, PlayerImg, EnemyImg, FireImg; //Images
-//left/right bounds respectively
+var Player, PlayerHealth, Fire, FireHealth, Enemies, EnemiesHealth, Structures, Clouds, Ground, Background, BossCastle; //Sprites
+var PlayerImg, PlayerHealthImg, FireImg, EnemiesImg, EnemiesHealthImg, StructuresImg, CloudsImg, GroundImg, BackgroundImg; //Images
+
+  //  left/right bounds respectively
 var start = 0;
 var end   = 32000;
-//firecball related
+
+  //  fireball health bar related code
 var FireCounter = 100;
-var FireStatus;
+var FireHealth;
 var FireDamage;
-    // FireStatus.depth = 10;
-var EnemyHealth;
-    // PlayerHealth.depth = 10;
 
-var EnemySpeed = 1;
+  //  player health bar related code
+var PlayerHealth;
 
+  //some constants
 var playerStep = 4;
 
-
-
-
-
-
+  //  For Images and sounds
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
     //FireImg = loadImage('http://i.imgur.com/0NUZboL.png');
     // PlayerImg = loadImage('http://i.imgur.com/AljRUIL.png');
-    EnemyImg = loadImage('http://i.imgur.com/ENSyxRr.png');
+    //EnemiesImg = loadImage('http://i.imgur.com/ENSyxRr.png');
 }
 
+  //  Initially create some stuff for our game
 function setup() {
-  createCanvas(700,600);
+  createCanvas(1400,750);
   //Length of game strip: 32,000 pixels
   //start @ x = 0
   //end @ x = 32000
 
-  //Sizing is tmp for mechanics:      width height
-  GROUND = createSprite(width/2, 550, 1400, 100);
-  // GROUND.addImage(GroundImg);
+  Player = createSprite(width/2, 475, 50, 50); //Creates Player Sprite
+  // Player.addImage(PlayerImg);
+  Player.setCollider("SQUARE", 0,0,50);
 
-    //  Create Structures Once
-  STRUCTURES = new Group();
+  PlayerHealth = createSprite(125, 50, 850, 50); //Creates PlayerHealth Sprite
 
+  Fire = new Group(); //Creates Array of Fire Sprites
+
+  FireHealth = createSprite(125, 50, 400, 50); //Creates FireHealth Sprite
+
+  Enemies = new Group(); //Creates Enemies Sprites
+
+  EnemiesHealth = new Group(); //Creates EnemiesHealth Sprites
+
+  Structures = new Group(); //Creates Structures Sprites
+
+    //  Code for creating Structures
   for(var i = 0; i < 37; i++) {
-    var a = random(0, 5); //arbitrary value
-    var b = random(0, 3); //arbitrary value pt. 2
+    var a = random(2, 5); //arbitrary value w
+    var b = random(1, 6); //arbitrary value pt. 2 h
 
     var w = 50 + (25 * a);
     var h = 50 + (25 * b);
@@ -72,160 +80,111 @@ function setup() {
     }
   }
 
-    //  psuedo code stuff
-  //if there's less than x structures, do stuff until there are x structures
+  Clouds = new Group(); //Creates Clouds Sprites
 
-    //posXmin is 700
-    //posXmax is 1400
+    //  Code for creating Clouds
+  for(var i = Clouds.length; i < 80; i++) {
+    var a = random(0, 5); //arbitrary value w
+    var b = random(0, 2); //arbitrary value pt. 2 h
 
-    //posY is 475
-
-    //a is random(0, 5)
-    //b is random(0, 3)
-
-    //w is 50 + (25 * a)
-    //min w is              50
-    //                      75
-    //                      100
-    //                      125
-    //max w is              150
-
-    //h is 50 + (25 * b)
-    //min h is              50
-    //                      75
-    //max h is              100
-
-    //if 0 structures
-      //posX is random(posXmin, posXmax)
-      //...
-      //createStructureSprite(posX, posY, w, h)
-    //else
-      //set posXmin to posXmin + 200 * i
-      //set posXmax to posXmax + 200 * i
-      //pos x is random(posXmin, posXmax)
-      //...
-      //createStructureSprite(posX, posY, w, h)
-
-      //700
-      //+ 200 * i
-      //max i is 148
-      //30600
-
-      //  Create Clouds
-    CLOUDS = new Group();
-
-    for(var i = CLOUDS.length; i < 80; i++) {
-      var a = random(0, 5); //arbitrary value
-      var b = random(0, 2); //arbitrary value pt. 2
-
-      var w = 50 + (25 * a);
-      var h = 50 + (25 * b);
-
-      var posXmin = 700;
-      var posXmax = 1400;
-
-      var posY = random(height / 3.5, 0);
-
-      if(i === 0) {
-        var posX = random(posXmin, posXmax);
-        createCloudSprite(posX, posY, w, h);
-      } else {
-        posXmin += 800 * i;
-        posXmax += 800 * i;
-        var posX = random(posXmin, posXmax);
-        createCloudSprite(posX, posY, w, h);
-      }
+    if (a < b) {
+      a = random(0, 5);
+      b = random(0, 2);
     }
 
-  //BG = createSprite();
+    var w = 50 + (25 * a);
+    var h = 50 + (25 * b);
 
-  PLAYER = createSprite(width/2, 475, 50, 50);
-  // PLAYER.addImage(PlayerImg);
-  PLAYER.setCollider("SQUARE", 0,0,50);
+    var posXmin = 700;
+    var posXmax = 1400;
 
-  BOSS_CASTLE = createSprite(31500, 475, 400, 400);
-  BOSS_CASTLE.setCollider();
+    var posY = random(height / 3.75, 0);
 
-  FireStatus = createSprite(125, 50, 200, 50);
+    if(i === 0) {
+      var posX = random(posXmin, posXmax);
+      createCloudSprite(posX, posY, w, h);
+    } else {
+      posXmin += 800 * i;
+      posXmax += 800 * i;
+      var posX = random(posXmin, posXmax);
+      createCloudSprite(posX, posY, w, h);
+    }
+  }
 
-  PlayerHealth = createSprite(125, 50, 400, 50);
+  Ground = createSprite(width/2, 550, 2800, 100); //Creates Ground Sprite
+  // Ground.addImage(GroundImg);
 
-  ENEMIES = new Group();
-  FIRE = new Group();
+  // Background = createSprite();
 
-  EnemyHealth = new Group();
+  BossCastle = createSprite(31500, 475, 400, 400); //Creates BossCastle Sprite
+  //BossCastle.setCollider();
 }
 
 function draw() {
   background(100, 150, 200);
-  textAlign(CENTER);
 
-  PLAYER.velocity.y += GRAVITY;
-  //Player GUI movement
-  FireStatus.position.x = camera.position.x + (FireCounter - 100) - width/2 + 125;
-  PlayerHealth.position.x = camera.position.x + width/4 - 55;
+  //Player | CAMERA | GUI bounds
 
-  FireStatus.width = FireCounter * 2;
+    //  Player GUI positioning
+  FireHealth.position.x = camera.position.x - 450 - ((400 - map(FireCounter, 100, 0, 400, 0)) / 2);
+  PlayerHealth.position.x = camera.position.x + 225;
 
-  //PLAYER and CAMERA bounds
+    //  Player Bounding
+  if(Player.position.x < start + Player.width/2) {
+    Player.position.x = Player.width/2;
+  } else if(Player.position.x > end - Player.width/2) {
+    Player.position.x = end - Player.width/2;
+  }
 
-    //  Says that CAMERA will always follow PLAYER except out of bounds
-  if(PLAYER.position.x > end - width/2){
+    //  Camera Bounding
+  if(Player.position.x > end - width/2){
     camera.position.x = end - width/2;
-  } else if(PLAYER.position.x < start + width/2){
+  } else if(Player.position.x < start + width/2){
     camera.position.x = start + width/2;
   } else {
-    camera.position.x = PLAYER.position.x;
+    camera.position.x = Player.position.x;
   }
 
-    //  bounding for PLAYER
-  if(PLAYER.position.x < start + PLAYER.width/2) {
-    PLAYER.position.x = PLAYER.width/2;
-  } else if(PLAYER.position.x > end - PLAYER.width/2) {
-    PLAYER.position.x = end - PLAYER.width/2;
-  }
 
-  if(PLAYER.position.y < 250) {
-     PLAYER.position.y = 250;
-  }
   /*
-
 
   End of PLAYER | CAMERA | GUI bounding
 
-
   */
+
+  //GRAVITY
+  Player.velocity.y += GRAVITY;
+  if(Player.position.y < 225) {
+    Player.position.y = 225;
+  }
 
   //Wrap ground
 
-    //  My better-than-alex's attempt to get the ground to wrap with movement
-  if(camera.position.x > GROUND.position.x + width / 4) {
-    GROUND.position.x += GROUND.width / 6;
-  } else if(camera.position.x < GROUND.position.x - width / 4) {
-    GROUND.position.x -= GROUND.width / 6;
+  if(camera.position.x > Ground.position.x + width / 4) {
+    Ground.position.x += Ground.width / 6;
+  } else if(camera.position.x < Ground.position.x - width / 4) {
+    Ground.position.x -= Ground.width / 6;
   }
   /*
 
-
   End of ground wrapping.
-
 
   */
 
   //Player Abilities
 
-  //  Jump
-if(keyWentDown(87)) {
-  PLAYER.velocity.y = JUMP;
-}
+    //  Jump
+  if(keyWentDown(87)) {
+    Player.velocity.y = JUMP;
+  }
 
     //  Left | Right
   if(keyDown(65)) {
-    PLAYER.position.x -= playerStep;
-    PLAYER.mirrorX(1);
+    Player.position.x -= playerStep;
+    Player.mirrorX(1);
   } else if(keyDown(68)) {
-    PLAYER.position.x += playerStep;
-    PLAYER.mirrorX(-1);
+    Player.position.x += playerStep;
+    Player.mirrorX(-1);
   }
 
     //  Sprinting
@@ -237,6 +196,13 @@ if(keyWentDown(87)) {
       playerStep /= 1.1;
   }
 
+
+    //  Changes width of FireHealth accordingly
+  FireHealth.width = map(FireCounter, 0, 100, 0, 400);
+
+    //  Changes FireDamage
+  FireDamage = FireCounter * .01;
+
     //  Limits Rate Of Fire
   if(FireCounter < 100) {
     FireCounter += .1;
@@ -244,55 +210,37 @@ if(keyWentDown(87)) {
 
     //  Player spits fire
   if(keyWentDown(32) && FireCounter >= 10) {
-      var fire = createSprite(PLAYER.position.x - 20 * PLAYER.mirrorX(), PLAYER.position.y, FireCounter * 2, FireCounter * 2);
+      var fire = createSprite(Player.position.x - 20 * Player.mirrorX(), Player.position.y, map(FireCounter, 0, 100, 0, 100), map(FireCounter, 0, 100, 0, 100));
       //fire.addImage(FireImg);
       fire.life = 40;
-      fire.setSpeed(-(11 + playerStep) * PLAYER.mirrorX(), 0);
-      fire.setCollider("circle", 0, 0, 50)
-      fire.mirrorX(-1 * PLAYER.mirrorX());
+      fire.setSpeed(-(11 + playerStep) * Player.mirrorX(), 0);
+      //fire.setCollider("circle", 0, 0, 50)
+      fire.mirrorX(-1 * Player.mirrorX());
 
-      FIRE.add(fire);
+      Fire.add(fire);
       FireCounter -= 10;
-
   }
-
 
   //  Prevents player from falling through ground (?)
   //  Prevents player from going through structures + castle
   //  or increasing their y velocity infinitely
 
-  if(PLAYER.collide(GROUND) || PLAYER.collide(STRUCTURES) || PLAYER.collide(BOSS_CASTLE)) {
-    if(PLAYER.velocity.y > 0) //positive y velocity is falling
-      PLAYER.velocity.y = 0;
+  if(Player.collide(Ground) || Player.collide(Structures) || Player.collide(BossCastle)) {
+    if(Player.velocity.y > 0) //positive y velocity is falling
+      Player.velocity.y = 0;
   }
-
-
-
   /*
-
 
   End of PLAYER code.
 
-
   */
-
-  //Check values here
 
   //Environment sprites
   var min = camera.position.x - width / 2 - 75;
   var max = camera.position.x + width / 2 + 75;
 
-    //  Hide or reveal structures
-  for(var i = 0; i < STRUCTURES.length; i++) {
-    if(STRUCTURES[i].position.x + (STRUCTURES[i].width / 2) >= camera.position.x - 350 && STRUCTURES[i].position.x - (STRUCTURES[i].width / 2) <= camera.position.x + 350) {
-      STRUCTURES[i].visible = true;
-    }else{
-      STRUCTURES[i].visible = false;
-    }
-  }
-
     //  Create Enemies and health
-  for(var i = ENEMIES.length; i < 35; i++) { //for every created enemy
+  for(var i = Enemies.length; i < 35; i++) {
     var posXmin = 700;
     var posXmax = 1400;
 
@@ -314,60 +262,73 @@ if(keyWentDown(87)) {
     }
   }
 
-  FireDamage = FireCounter * .01;
-
     //  Hide or reveal Enemies and health
-  for(var i = 0; i < ENEMIES.length; i++) {
-    if(ENEMIES[i].position.x  + 25 >= camera.position.x - 350 && ENEMIES[i].position.x - 25 <= camera.position.x + 350) {
-      ENEMIES[i].visible = true;
-      if(ENEMIES[i].position.x >= camera.position.x - 200 && ENEMIES[i].position.x <= camera.position.x + 200) {
-         EnemyHealth[i].visible = true;
+  for(var i = 0; i < Enemies.length; i++) {
+    if(Enemies[i].position.x  + 25 >= camera.position.x - 700 && Enemies[i].position.x - 25 <= camera.position.x + 700) {
+      Enemies[i].visible = true;
+      if(Enemies[i].position.x >= camera.position.x - 350 && Enemies[i].position.x <= camera.position.x + 350) {
+         EnemiesHealth[i].visible = true;
          //FEATURE: Add blinking health bar when enemy is dying
       } else {
-        EnemyHealth[i].visible = false;
+        EnemiesHealth[i].visible = false;
       }
     } else {
-      ENEMIES[i].visible = false;
-      EnemyHealth[i].visible = false;
+      Enemies[i].visible = false;
+      EnemiesHealth[i].visible = false;
     }
 
-    if(ENEMIES[i].overlap(FIRE) && EnemyHealth[i].overlap(FIRE)) {
-      EnemyHealth[i].width -= FireDamage;
-      EnemyHealth[i].position.x -= FireDamage / 2;
+    if(Enemies[i].overlap(Fire) && EnemiesHealth[i].overlap(Fire)) {
+      EnemiesHealth[i].width -= FireDamage;
+      EnemiesHealth[i].position.x -= FireDamage / 2;
     }
 
-    if(EnemyHealth[i].width <= 1) {
-      EnemyHealth[i].remove();
-      ENEMIES[i].remove();
+    if(EnemiesHealth[i].width <= 1) {
+      EnemiesHealth[i].remove();
+      Enemies[i].remove();
     }
 
       //  Damages player if player runs into enemy
-    if(PLAYER.position.x + 25 >= ENEMIES[i].position.x - 25 || PLAYER.position.x - 25 <= ENEMIES[i].position.x + 25) {
-      // PLAYER.velocity *= -2;
-      // PLAYER.velocity *= -1;
+    if(Player.position.x + 25 >= Enemies[i].position.x - 25 || Player.position.x - 25 <= Enemies[i].position.x + 25) {
+      // Player.velocity *= -2;
+      // Player.velocity *= -1;
+    }
+
+    // if(Enemies[i].visible && Structures[i].visible) {
+    //   Enemies[i].collide(Structures)
+    //   EnemiesHealth[i].collide(Structures)
+    //   console.log("works?");
+    // }
+
+  }
+
+    //  Hide or reveal pre created structures
+  for(var i = 0; i < Structures.length; i++) {
+    if(Structures[i].position.x + (Structures[i].width / 2) >= camera.position.x - 700 && Structures[i].position.x - (Structures[i].width / 2) <= camera.position.x + 700) {
+      Structures[i].visible = true;
+    }else{
+      Structures[i].visible = false;
     }
   }
 
-    //  Hide or reveal Clouds
-  for(var i = 0; i < CLOUDS.length; i++) {
-    if(CLOUDS[i].position.x + (CLOUDS[i].width / 2) >= camera.position.x - 350 && CLOUDS[i].position.x - (CLOUDS[i].width / 2) <= camera.position.x + 350) {
-      CLOUDS[i].visible = true;
+    //  Hide or reveal pre created Clouds
+  for(var i = 0; i < Clouds.length; i++) {
+    if(Clouds[i].position.x + (Clouds[i].width / 2) >= camera.position.x - 700 && Clouds[i].position.x - (Clouds[i].width / 2) <= camera.position.x + 700) {
+      Clouds[i].visible = true;
     }else{
-      CLOUDS[i].visible = false;
+      Clouds[i].visible = false;
     }
+    // Enemies[i].collide(Structures);
   }
   /*
 
-
   End of Environment Sprites code.
-
 
   */
 
   //Debug
-  GROUND.debug = false;
-  PLAYER.debug = true;
-  BOSS_CASTLE.debug = false;
+  Ground.debug = false;
+  Player.debug = true;
+  BossCastle.debug = false;
 
   drawSprites();
 }
@@ -376,33 +337,37 @@ if(keyWentDown(87)) {
 function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
   var newEnemy = createSprite(x, yEnemy, w, hEnemy);
   var newHealth = createSprite(x, yHealth, w, hHealth);
-  var a = random(1, 3)
+  var EnemySpeed = 1;
+  var a = random(0, 3);
   if (a === 1) {
     EnemySpeed = -1
     newEnemy.setSpeed(EnemySpeed, 0);
     newHealth.setSpeed(EnemySpeed, 0);
   }else{
-    newEnemy.setSpeed(EnemySpeed, 0);
-    newHealth.setSpeed(EnemySpeed, 0);
+    newEnemy.setSpeed(EnemySpeed, 180);
+    newHealth.setSpeed(EnemySpeed, 180);
   }
 
   // newEnemy.debug = true;
   // newHealth.debug = true;
   newEnemy.setCollider("square", 0,0,50);
   newHealth.setCollider("square", 0, 0, 50, 10);
-  ENEMIES.add(newEnemy);
-  EnemyHealth.add(newHealth);
+  Enemies.add(newEnemy);
+  EnemiesHealth.add(newHealth);
 
   return newEnemy;
 }
 
+function Enemies() {
+
+}
 
 //Creates a cloud
 function createCloudSprite(x, y, w, h) {
   var newCloud = createSprite(x ,y, w, h);
       newCloud.depth = y / 100;
   // newCloud.setCollider("rectangle");
-  CLOUDS.add(newCloud);
+  Clouds.add(newCloud);
 
   return newCloud;
 }
@@ -411,7 +376,7 @@ function createCloudSprite(x, y, w, h) {
 function createStructureSprite(x, y, w, h) {
   var newStructure = createSprite(x, y, w, h);
 
-  STRUCTURES.add(newStructure);
+  Structures.add(newStructure);
 
   return newStructure;
 }
