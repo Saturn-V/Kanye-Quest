@@ -25,7 +25,6 @@ var PlayerHealth;
 
   //some constants
 var playerStep = 4;
-var EnemySpeed = playerStep;
 
   //  For Images and sounds
 function preload() {
@@ -241,26 +240,18 @@ function draw() {
   var max = camera.position.x + width / 2 + 75;
 
     //  Create Enemies and health
-  for(var i = Enemies.length; i < 2; i++) {
-    var posXmin = 700;
-    var posXmax = 1400;
+  for(var i = Enemies.length; i < 5; i++) {
+    var posXmin = 200 * i;
+    var posXmax = 200 * i + 200;
 
-    var x;
+    var x = random(posXmin, posXmax);
     var yEnemy = 475;
     var yHealth = yEnemy - 40;
     var w = 50;
     var hEnemy = 50;
     var hHealth = hEnemy - 40;
 
-    if(i === 0) {
-      x = random(posXmin, posXmax);
-      createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
-    } else {
-      posXmin += 800 * i;
-      posXmax += 800 * i;
-      x = random(posXmin, posXmax);
-      createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
-    }
+    createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
   }
 
 
@@ -270,7 +261,10 @@ function draw() {
 
 
     //  Hide or reveal Enemies and health
+    
   for(var i = 0; i < Enemies.length; i++) {
+    Enemies[i].visible = true;
+    /*
     if(Enemies[i].position.x  + 25 >= camera.position.x - 700 && Enemies[i].position.x - 25 <= camera.position.x + 700) {
       Enemies[i].visible = true;
       if(Enemies[i].position.x >= camera.position.x - 350 && Enemies[i].position.x <= camera.position.x + 350) {
@@ -283,10 +277,9 @@ function draw() {
       Enemies[i].visible = false;
       EnemiesHealth[i].visible = false;
     }
-
-    if(Enemies[i].overlap(Fire) && EnemiesHealth[i].overlap(Fire)) {
+    */
+    if(Enemies[i].overlap(Fire)) {
       EnemiesHealth[i].width -= FireDamage;
-      EnemiesHealth[i].position.x -= FireDamage / 2;
     }
 
     if(EnemiesHealth[i].width <= 1) {
@@ -296,24 +289,19 @@ function draw() {
 
       //  Damages player if player runs into enemy
     if(Player.position.x + 25 >= Enemies[i].position.x - 25 || Player.position.x - 25 <= Enemies[i].position.x + 25) {
-      // Player.velocity *= -2;
-      // Player.velocity *= -1;
+      // Player.velocity.x *= -2;
+      // Player.velocity.x *= -1;
     }
 
-    //Sets speed of enemy sprites
-      Enemies[i].position.x += EnemySpeed;
-      EnemiesHealth[i].position.x += EnemySpeed;
-
+    EnemiesHealth[i].position.x = Enemies[i].position.x;
+    Enemies[i].position.x += Enemies[i].velocity;
     // if(Enemies[i].visible && Structures[i].visible) {
       if(Enemies[i].collide(Structures) || EnemiesHealth[i].collide(Structures)) {
-        // var tmpEnemySpeed = EnemySpeed;
-        Enemies[i].position.x += EnemySpeed * -1;
-        EnemiesHealth[i].position.x += EnemySpeed * -1;
-        // Enemies[i] = EnemySpeed;
-        // EnemiesHealth[i] += EnemySpeed;
-        console.log("works?");
-      }
+        //hopefully reverses direction
+        Enemies[i].velocity.x *= -1;
 
+        console.log(Enemies[i].velocity.x);
+      }
     // }
     // console.log("pos x enemy[0]: " + Enemies[0].position.x);
     // console.log("pos x enemy[1]: " + Enemies[1].position.x);
@@ -364,6 +352,12 @@ function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
   EnemiesHealth.add(newHealth);
 
   return newEnemy;
+  /*
+  this.position = createVector(x. yEnemy);
+  this.velocity = createVector(0, 0);
+  ths.acceleration = createVector(0. 0);
+  */
+
 }
 
 function Enemies() {
