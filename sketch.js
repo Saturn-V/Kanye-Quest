@@ -263,6 +263,12 @@ function draw() {
     }
   }
 
+
+
+
+
+
+
     //  Hide or reveal Enemies and health
   for(var i = 0; i < Enemies.length; i++) {
     if(Enemies[i].position.x  + 25 >= camera.position.x - 700 && Enemies[i].position.x - 25 <= camera.position.x + 700) {
@@ -277,10 +283,6 @@ function draw() {
       Enemies[i].visible = false;
       EnemiesHealth[i].visible = false;
     }
-
-    //Sets speed of enemy sprites
-      Enemies[i].position.x += EnemySpeed * -1;
-      EnemiesHealth[i].position.x += EnemySpeed * -1;
 
     if(Enemies[i].overlap(Fire) && EnemiesHealth[i].overlap(Fire)) {
       EnemiesHealth[i].width -= FireDamage;
@@ -298,13 +300,20 @@ function draw() {
       // Player.velocity *= -1;
     }
 
+    //Sets speed of enemy sprites
+      Enemies[i].position.x += EnemySpeed;
+      EnemiesHealth[i].position.x += EnemySpeed;
+
     // if(Enemies[i].visible && Structures[i].visible) {
       if(Enemies[i].collide(Structures) || EnemiesHealth[i].collide(Structures)) {
-        EnemySpeed = EnemySpeed * -1;
+        // var tmpEnemySpeed = EnemySpeed;
+        Enemies[i].position.x += EnemySpeed * -1;
+        EnemiesHealth[i].position.x += EnemySpeed * -1;
         // Enemies[i] = EnemySpeed;
         // EnemiesHealth[i] += EnemySpeed;
         console.log("works?");
       }
+
     // }
     // console.log("pos x enemy[0]: " + Enemies[0].position.x);
     // console.log("pos x enemy[1]: " + Enemies[1].position.x);
