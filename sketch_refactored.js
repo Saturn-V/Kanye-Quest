@@ -11,48 +11,35 @@ function setup() {
   //start @ x = 0
   //end @ x = 32000
   Ground = new Ground();
-  // Player = new Player();
-  for(var i = 0; i < 10; i++) {
-    Enemies[i] = new Enemy();
-  }
+  Player = new Player();
 }
 
 function draw() {
   background(51);
   Ground.display();
   
-  for(var i = 0; i < Enemies.length; i++) {
-    var wind = createVector(0.3, 0);
-    // var gravity = createVector(0, 0.1 * Enemies[i].mass);
-    
-    var c = 0.1; //coefficient of friction
-    var normal = 1; //normal force
-    var frictionMag = c * normal; //magnitude of friction
-    var friction = Enemies[i].vel.copy(); //get a copy of velocity to do stuff
-    friction.mult(-1); //make sure we get friction as an opposite vector (newton's 3rd law)
-    friction.normalize(); //nrmalize the vector to be a unit vector
-    friction.mult(frictionMag); //create friction vector
-    
-    Enemies[i].applyForce(friction);
-    Enemies[i].applyForce(wind);
-    // Enemies[i].applyForce(gravity);
-    Enemies[i].move();
-    Enemies[i].display();
-    Enemies[i].checkEdges();
+  var Gravity = createVector(0, .25);
+  var fWalk = createVector(.5, 0);
+  
+  // Player.applyForce(Gravity);
+  Player.applyForce(fWalk);
+  // Player.applyForce(fJump);
+  
+  if(keyDown(65)) { //  Move left
+    Player.moveLeft();
+  } else if(keyDown(68)) {  //  Move Right
+    Player.moveRight();
   }
+  
+  if(keyDown()) { //  Jump
+    var fJump = createVector(0, .5);
+    Player.applyForce(fJump);
+    Player.jump();
+    Player.acceleration.y.mult(0);
+  }
+  Player.display();
+  Player.checkEdges();
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -61,8 +48,7 @@ function draw() {
 
 //These are constructors for objects
 function Ground() {
-  this.x = width/2;
-  this.y = 550;
+  this.position = createVector(width/2, 550);
   this.width = 2800;
   this.height = 100;
   
@@ -74,44 +60,68 @@ function Ground() {
 }
 
 function Player() {
-  this.pos = createVector(width/2, 475);
-  this.vel = createVector(0, 0);
-  this.acc = createVector(0, 0);
-  // this.fric = 0.7;
-  this.width = 50;
-  this.height = 50;
+  this.position = createVector(width/2, 475);
+  this.velocity = createVector(0, 0);
+  this.acceleration = createVector(0, 0);
+  this.maxSpeed = 10;
+  this.maxForce = 0.5;
+  this.mass = 5;
+  this.width = this.mass * 20;
+  this.height = this.mass * 20;
   this.col = 245;
   
-  this.move = function() {
-    var fWalk = createVector(.5, 0);
-    this.acc.add(fWalk);
-    
-    if(keyDown(65)) {
-      this.vel.sub(this.acc);
-      // this.vel.x *= this.fric;
-      this.vel.limit(80);
-      this.pos.add(this.vel);
-      this.acc.mult(0);
-     
-      // this.col = this.col - 1;
-    } else if(keyDown(68)) {
-      this.vel.add(this.acc);
-      // this.vel.x *= this.fric;
-      this.vel.limit(80);
-      this.pos.add(this.vel);
-      this.acc.mult(0);
-      // this.col = this.col - 1;
+  this.moveLeft = function() {
+    this.velocity.add(this.acceleration);
+    this.velocity.limit(this.maxSpeed);
+    this.position.sub(this.velocity);
+    console.log("Left!");
+    // this.acceleration.mult(0);
+  }
+  
+  this.moveRight = function() {
+    this.velocity.add(this.acceleration);
+    this.velocity.limit(this.maxSpeed);
+    this.position.add(this.velocity);
+    //  this.acceleration.mult(0);
+    console.log("Right!");
+  }
+  
+  this.jump = function() {
+    this.velocity.add(this.acceleration);
+    this.velocity.limit(this.maxSpeed);
+    this.position.add(this.velocity);
+    console.log("Jumped!");
+  }
+  
+  this.applyForce = function(force) {
+    var f = p5.Vector.div(force, this.mass);
+    this.acceleration.add(f);
+  }
+  
+   this.checkEdges = function() {
+    if (this.position.x > width) {
+      this.position.x = width;
+      if(keyDown(65)) {
+        this.velocity.x *= -1;
+        this.acceleration.x *= -1;
+      }
+    } else if (this.position.x < 0) {
+      if(keyDown(68)) {
+        this.acceleration.x *= -1;
+        this.velocity.x *= -1;
+      }
+      this.position.x = 0;
     }
-    
-    // if(this.vel.mag() != 5 && !keyDown(65)) {
-    //   this.col = random(0, 255);
-    // }
+    if (this.position.y > height) {
+      this.velocity.y *= -1;
+      this.position.y = height;
+    }
   }
   
   this.display = function() {
     rectMode(CENTER);
     fill(this.col);
-    rect(this.pos.x, this.pos.y, this.width, this.height);
+    rect(this.position.x, this.position.y, this.width, this.height);
   }
 }
   

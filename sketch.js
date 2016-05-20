@@ -254,20 +254,16 @@ function draw() {
 
     if(i === 0) {
       x = random(posXmin, posXmax);
-      createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
+      var newEnemy = createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
+      Enemies.push(newEnemy);
     } else {
       posXmin += 800 * i;
       posXmax += 800 * i;
       x = random(posXmin, posXmax);
-      createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
+      var newEnemy = createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w);
+      Enemies.push(newEnemy);
     }
   }
-
-
-
-
-
-
 
     //  Hide or reveal Enemies and health
   for(var i = 0; i < Enemies.length; i++) {
@@ -317,6 +313,9 @@ function draw() {
     // }
     // console.log("pos x enemy[0]: " + Enemies[0].position.x);
     // console.log("pos x enemy[1]: " + Enemies[1].position.x);
+
+    Enemies[i].move();
+    Enemies[i].display();
   }
 
     //  Hide or reveal pre created structures
@@ -353,17 +352,31 @@ function draw() {
 
 //Creates an Enemy and Health
 function createEnemy(yEnemy, hEnemy, yHealth, hHealth, x, w) {
-  var newEnemy = createSprite(x, yEnemy, w, hEnemy);
-  var newHealth = createSprite(x, yHealth, w, hHealth);
+  // var newEnemy = createSprite(x, yEnemy, w, hEnemy);
+  // var newHealth = createSprite(x, yHealth, w, hHealth);
+  //
+  // // newEnemy.debug = true;
+  // // newHealth.debug = true;
+  // newEnemy.setCollider("square", 0,0,50);
+  // newHealth.setCollider("square", 0, 0, 50, 10);
+  // Enemies.add(newEnemy);
+  // EnemiesHealth.add(newHealth);
+  //
+  // return newEnemy;
+  this.w = w;
+  this.height = hEnemy;
+  this.position = createVector(x, yEnemy);
+  this.velocity = createVector(0, 0);
+  this.acceleration = createVector(0, 0);
 
-  // newEnemy.debug = true;
-  // newHealth.debug = true;
-  newEnemy.setCollider("square", 0,0,50);
-  newHealth.setCollider("square", 0, 0, 50, 10);
-  Enemies.add(newEnemy);
-  EnemiesHealth.add(newHealth);
+  this.move = function() {
 
-  return newEnemy;
+  }
+
+  this.display = function() {
+    fill(225);
+    rect(x, yEnemy, w, hEnemy);
+  }
 }
 
 function Enemies() {
