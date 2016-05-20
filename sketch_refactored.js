@@ -1,6 +1,7 @@
 var Ground, Player;
 var Enemies = [];
-
+var start = 0;
+var end = 2000;
 function preload() {
   
 }
@@ -13,11 +14,29 @@ function setup() {
   Ground = new Ground();
   Player = new Player();
 }
-
+ 
 function draw() {
-  background(51);
-  Ground.display();
-  
+  var a = Player.position.x;
+  var col = map(a, end, start, 0, 255);
+
+  background(col);
+
+  console.log(Player.position.x);
+   //  Player Bounding
+  if(Player.position.x < start + Player.width/2) {
+    Player.position.x = start + Player.width/2;
+  } else if(Player.position.x > end - Player.width/2) {
+    Player.position.x = end - Player.width/2;
+  }
+
+    //  Camera Bounding
+  if(Player.position.x > end - width/2){
+    camera.position.x = end - width/2;
+  } else if(Player.position.x < start + width/2){
+    camera.position.x = start + width/2;
+  } else {
+    camera.position.x = Player.position.x;
+  }
   var Gravity = createVector(0, .25);
   var fWalk = createVector(.5, 0);
   
@@ -31,14 +50,15 @@ function draw() {
     Player.moveRight();
   }
   
-  if(keyDown()) { //  Jump
+  if(keyDown('w')) { //  Jump
     var fJump = createVector(0, .5);
     Player.applyForce(fJump);
     Player.jump();
-    Player.acceleration.y.mult(0);
+    //Player.acceleration.y.mult(0);
   }
+  Ground.display();
   Player.display();
-  Player.checkEdges();
+  // Player.checkEdges();
 }
 
 
@@ -55,7 +75,7 @@ function Ground() {
   this.display = function() {
     rectMode(CENTER);
     fill(255);
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.position.x, this.position.y, this.width, this.height);
   }
 }
 
