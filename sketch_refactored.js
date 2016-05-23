@@ -1,5 +1,6 @@
 var Ground, Player;
 var Enemies = [];
+
 var start = 0;
 var end = 2000;
 function preload() {
@@ -27,11 +28,12 @@ function draw() {
 
   background(col);
 
+
   var Gravity = createVector(0, .25);
   var fWalk = createVector(.5, 0);
 
   // Player.applyForce(Gravity);
-
+ 
   if (keyDown(65)) { //  Move left
     if(Player.velocity.x < 0) {
       Player.velocity.x *= -1;
@@ -55,7 +57,9 @@ function draw() {
 
   Ground.display();
   Player.display();
+
   Player.setBounding();
+
 }
 
 //These are constructors for objects
