@@ -32,7 +32,7 @@ function draw() {
 
 
   var Gravity = createVector(0, .25);
-  var fWalk = createVector(.5, 0);
+  var fWalk = createVector(.2, 0);
 
   // Player.applyForce(Gravity);
  
