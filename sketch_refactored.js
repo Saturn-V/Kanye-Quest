@@ -16,27 +16,16 @@ function setup() {
 }
 
 function draw() {
+
+  console.log("Player: " + Player.position.x);
+  console.log("Ground: " + Ground.position.x);
+  console.log("Camera: " + camera.position.x);
+
+
   var a = Player.position.x;
   var col = map(a, end, start, 0, 255);
 
   background(col);
-
-  console.log(Player.position.x);
-   //  Player Bounding
-  if(Player.position.x < start + Player.width/2) {
-    Player.position.x = start + Player.width/2;
-  } else if(Player.position.x > end - Player.width/2) {
-    Player.position.x = end - Player.width/2;
-  }
-
-    //  Camera Bounding
-  if(Player.position.x > end - width/2){
-    camera.position.x = end - width/2;
-  } else if(Player.position.x < start + width/2){
-    camera.position.x = start + width/2;
-  } else {
-    camera.position.x = Player.position.x;
-  }
 
   var Gravity = createVector(0, .25);
   var fWalk = createVector(.5, 0);
@@ -44,9 +33,15 @@ function draw() {
   // Player.applyForce(Gravity);
 
   if (keyDown(65)) { //  Move left
+    if(Player.velocity.x < 0) {
+      Player.velocity.x *= -1;
+    }
     Player.applyForce(fWalk);
     Player.moveLeft();
   } else if (keyDown(68)) { //  Move Right
+  if(Player.velocity.x > 0) {
+      Player.velocity.x *= -1;
+    }
     Player.applyForce(fWalk);
     Player.moveRight();
   }
@@ -55,17 +50,13 @@ function draw() {
     var fJump = createVector(0, .5);
     Player.applyForce(fJump);
     Player.jump();
+
   }
 
   Ground.display();
   Player.display();
-  // Player.checkEdges();
+  Player.setBounding();
 }
-
-
-
-
-
 
 //These are constructors for objects
 function Ground() {
@@ -84,26 +75,25 @@ function Player() {
   this.position = createVector(width / 2, 475);
   this.velocity = createVector(0, 0);
   this.acceleration = createVector(0, 0);
-  this.maxSpeed = 10;
+  this.maxSpeed = 20;
   this.maxForce = 0.5;
   this.mass = 5;
-  this.width = this.mass * 20;
-  this.height = this.mass * 20;
+  this.width = this.mass * 10;
+  this.height = this.mass * 10;
   this.col = 245;
 
   this.moveLeft = function() {
-    this.velocity.add(this.acceleration);
+    this.velocity.x += this.acceleration.x;
     this.velocity.limit(this.maxSpeed);
-    this.position.sub(this.velocity);
+    this.position.x -= this.velocity.x;
     console.log("Left!");
     // this.acceleration.mult(0);
   }
 
   this.moveRight = function() {
-    this.velocity.add(this.acceleration);
+    this.velocity.x += this.acceleration.x;
     this.velocity.limit(this.maxSpeed);
-    this.position.add(this.velocity);
-    //  this.acceleration.mult(0);
+    this.position.x += this.velocity.x;
     console.log("Right!");
   }
 
@@ -119,24 +109,40 @@ function Player() {
     this.acceleration.add(f);
   }
 
-  this.checkEdges = function() {
-    if (this.position.x > width) {
-      this.position.x = width;
-      if (keyDown(65)) {
-        this.velocity.x *= -1;
-        this.acceleration.x *= -1;
-      }
-    } else if (this.position.x < 0) {
-      if (keyDown(68)) {
-        this.acceleration.x *= -1;
-        this.velocity.x *= -1;
-      }
-      this.position.x = 0;
+  this.setBounding = function() {
+     //  Player Bounding
+    if(Player.position.x < start + Player.width/2) {
+      Player.position.x = start + Player.width/2;
+    } else if(Player.position.x > end - Player.width/2) {
+      Player.position.x = end - Player.width/2;
     }
-    if (this.position.y > height) {
-      this.velocity.y *= -1;
-      this.position.y = height;
+
+    //  "Camera" Bounding | also first reference to camera
+    if(Player.position.x > end - width/2){
+      camera.position.x = end - width/2;
+    } else if(Player.position.x < start + width/2){
+      camera.position.x = start + width/2;
+    } else {
+      camera.position.x = Player.position.x;
     }
+
+    // if (this.position.x > width) {
+    //   this.position.x = width;
+    //   if (keyDown(65)) {
+    //     this.velocity.x *= -1;
+    //     this.acceleration.x *= -1;
+    //   }
+    // } else if (this.position.x < 0) {
+    //   if (keyDown(68)) {
+    //     this.acceleration.x *= -1;
+    //     this.velocity.x *= -1;
+    //   }
+    //   this.position.x = 0;
+    // }
+    // if (this.position.y > height) {
+    //   this.velocity.y *= -1;
+    //   this.position.y = height;
+    // }
   }
 
   this.display = function() {
