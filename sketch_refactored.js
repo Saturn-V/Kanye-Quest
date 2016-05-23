@@ -18,10 +18,12 @@ function setup() {
 
 function draw() {
 
-  console.log("Player: " + Player.position.x);
-  console.log("Ground: " + Ground.position.x);
-  console.log("Camera: " + camera.position.x);
-
+  // console.log("Player: " + Player.position.x);
+  // console.log("Ground: " + Ground.position.x);
+  // console.log("Camera: " + camera.position.x);
+  console.log("acc" + Player.acceleration.x);
+  console.log("vel" + Player.velocity.x);
+  console.log("pos" + Player.position.x);
 
   var a = Player.position.x;
   var col = map(a, end, start, 0, 255);
@@ -76,8 +78,8 @@ function Ground() {
 }
 
 function Player() {
-  this.position = createVector(width / 2, 475);
-  this.velocity = createVector(0, 0);
+  this.position     = createVector(width / 2, 475);
+  this.velocity     = createVector(0, 0);
   this.acceleration = createVector(0, 0);
   this.maxSpeed = 20;
   this.maxForce = 0.5;
