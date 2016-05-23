@@ -1,6 +1,5 @@
 var Ground, Player;
 var Enemies = [];
-
 var start = 0;
 var end = 2000;
 function preload() {
@@ -18,24 +17,21 @@ function setup() {
 
 function draw() {
 
-  // console.log("Player: " + Player.position.x);
-  // console.log("Ground: " + Ground.position.x);
-  // console.log("Camera: " + camera.position.x);
-  console.log("acc" + Player.acceleration.x);
-  console.log("vel" + Player.velocity.x);
-  console.log("pos" + Player.position.x);
+  console.log("Player: " + Player.position.x);
+  console.log("Ground: " + Ground.position.x);
+  console.log("Camera: " + camera.position.x);
+
 
   var a = Player.position.x;
   var col = map(a, end, start, 0, 255);
 
   background(col);
 
-
-  var Gravity = createVector(0, .25);
+  var Gravity = createVector(0, .3);
   var fWalk = createVector(.2, 0);
 
   // Player.applyForce(Gravity);
- 
+
   if (keyDown(65)) { //  Move left
     if(Player.velocity.x < 0) {
       Player.velocity.x *= -1;
@@ -51,18 +47,32 @@ function draw() {
   }
 
   if (keyDown(87)) { //  Jump
-    var fJump = createVector(0, .5);
+    var fJump = createVector(0, .5 * -1);
     Player.applyForce(fJump);
     Player.jump();
+    
+    if(Player.collide(Ground)) {
+      Player.velocity.y = 0;
+    }
 
   }
 
   Ground.display();
   Player.display();
-
   Player.setBounding();
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 //These are constructors for objects
 function Ground() {
@@ -78,8 +88,8 @@ function Ground() {
 }
 
 function Player() {
-  this.position     = createVector(width / 2, 475);
-  this.velocity     = createVector(0, 0);
+  this.position = createVector(width / 2, 475);
+  this.velocity = createVector(0, 0);
   this.acceleration = createVector(0, 0);
   this.maxSpeed = 20;
   this.maxForce = 0.5;
@@ -108,6 +118,17 @@ function Player() {
     this.velocity.limit(this.maxSpeed);
     this.position.add(this.velocity);
     console.log("Jumped!");
+  }
+  
+  this.collide = function(obj2) {
+    var r1 = this.width / 2;
+    var r2 = obj2.width / 2;
+    var d = dist(this.position.x, this.position.y, obj2.position.x, obj2.position.y); 
+    
+    if(d < r1 + r2) {
+      return true;
+    }
+    return false;
   }
 
   this.applyForce = function(force) {
