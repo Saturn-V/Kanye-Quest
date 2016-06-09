@@ -1,7 +1,9 @@
-var Ground, Player;
+var Player;
 var Enemies = [];
 var start = 0;
 var end = 2000;
+var num_of_ground_sprites = 1400 / 400;
+var GroundSprites = [];
 function preload() {
 
 }
@@ -11,17 +13,21 @@ function setup() {
   //Length of game strip: 32,000 pixels
   //start @ x = 0
   //end @ x = 32000
-  Ground = new Ground();
+  for(var i = 0; i < num_of_ground_sprites; i++) {
+    GroundSprites[i] = new Ground(i * 200);
+  }
   Player = new Player();
 }
 
 function draw() {
 
   console.log("Player: " + Player.position.x);
-  console.log("Ground: " + Ground.position.x);
+  for(var i = 0; i < num_of_ground_sprites;  i++) {
+    console.log("Ground: " + GroundSprites[i].position.x); 
+  }
   console.log("Camera: " + camera.position.x);
 
-
+  //random test stuff for color
   var a = Player.position.x;
   var col = map(a, end, start, 0, 255);
 
@@ -47,17 +53,20 @@ function draw() {
   }
 
   if (keyDown(87)) { //  Jump
-    var fJump = createVector(0, .5 * -1);
+    var fJump = createVector(0, -.5);
     Player.applyForce(fJump);
     Player.jump();
     
-    if(Player.collide(Ground)) {
+    for(var j = 0; j < GroundSprites.length; j++) {
+      if(Player.collide(GroundSprites[j])) {
       Player.velocity.y = 0;
+    } 
     }
-
   }
-
-  Ground.display();
+  
+  for(var k = 0; k < GroundSprites.length; k++) {
+    GroundSprites[k].display(); 
+  }
   Player.display();
   Player.setBounding();
 }
@@ -75,9 +84,9 @@ function draw() {
 
 
 //These are constructors for objects
-function Ground() {
-  this.position = createVector(width / 2, 550);
-  this.width = 2800;
+function Ground(x) {
+  this.position = createVector(x, 550);
+  this.width = 400;
   this.height = 100;
 
   this.display = function() {
@@ -114,9 +123,9 @@ function Player() {
   }
 
   this.jump = function() {
-    this.velocity.add(this.acceleration);
+    this.velocity.y += this.acceleration.y;
     this.velocity.limit(this.maxSpeed);
-    this.position.add(this.velocity);
+    this.position.y += this.velocity.y;
     console.log("Jumped!");
   }
   
@@ -150,26 +159,8 @@ function Player() {
     } else if(Player.position.x < start + width/2){
       camera.position.x = start + width/2;
     } else {
-      camera.position.x = Player.position.x;
+      camera.position = Player.position;
     }
-
-    // if (this.position.x > width) {
-    //   this.position.x = width;
-    //   if (keyDown(65)) {
-    //     this.velocity.x *= -1;
-    //     this.acceleration.x *= -1;
-    //   }
-    // } else if (this.position.x < 0) {
-    //   if (keyDown(68)) {
-    //     this.acceleration.x *= -1;
-    //     this.velocity.x *= -1;
-    //   }
-    //   this.position.x = 0;
-    // }
-    // if (this.position.y > height) {
-    //   this.velocity.y *= -1;
-    //   this.position.y = height;
-    // }
   }
 
   this.display = function() {

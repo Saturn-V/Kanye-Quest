@@ -1,32 +1,22 @@
-//Kanye Quest
-
-// MAKE BRANCH FOR:
-//(PROM EDITION) - 3 keys, once collected go to boss door
-//                 Fight enemy to save princess, defeat
-//                 enemy,
-//(SPACE THEMED) - Explore the universe and go to prom with me (or something like that I guess)
-
-var GRAVITY = .4; //Constant
-var JUMP = -10; //constant
+var Gravity = .4; //Constant
+var Jump = -7; //constant
 var Player, PlayerHealth, Fire, FireHealth, Enemies, EnemiesHealth, Structures, Clouds, Ground, Background, BossCastle; //Sprites
 var PlayerImg, PlayerHealthImg, FireImg, EnemiesImg, EnemiesHealthImg, StructuresImg, CloudsImg, GroundImg, BackgroundImg; //Images
 
-  //  left/right bounds respectively
-var start = 0;
-var end   = 32000;
+var start = 0; //  left/right 
+var end   = 32000; // bounds respectively
 
-  //  fireball health bar related code
+var numGroundSprites;
+var numStructureSprites;
+
+//  fireball health bar related code
 var FireCounter = 100;
-var FireHealth;
 var FireDamage;
 
-  //  player health bar related code
-var PlayerHealth;
-
-  //some constants
+//some constants
 var playerStep = 4;
 
-  //  For Images and sounds
+//  For Images and sounds
 function preload() {
 
     // GroundImg = loadImage('http://i.imgur.com/p6L1baG.png');
@@ -35,83 +25,110 @@ function preload() {
     //EnemiesImg = loadImage('http://i.imgur.com/ENSyxRr.png');
 }
 
-  //  Initially create some stuff for our game
+//  Initially create some stuff for our game
 function setup() {
   createCanvas(1400,750);
   //Length of game strip: 32,000 pixels
   //start @ x = 0
   //end @ x = 32000
-
-  Player = createSprite(width/2, 475, 50, 50); //Creates Player Sprite
+  numStructureSprites = 1400 / random(400, 600);
+  
+  Player = createSprite(width/2, height - (125), 50, 50); //Creates Player Sprite
   // Player.addImage(PlayerImg);
-  Player.setCollider("SQUARE", 0,0,50);
-
+  // Player.setCollider("SQUARE", 0,0,50);
   PlayerHealth = createSprite(125, 50, 850, 50); //Creates PlayerHealth Sprite
 
-  Fire = new Group(); //Creates Array of Fire Sprites
-
-  FireHealth = createSprite(125, 50, 400, 50); //Creates FireHealth Sprite
+  Fire = new Group(); //Creates Array of Fire Sprites for Kanye
+  FireHealth = createSprite(125, 50, 400, 50); //Creates FireHealth Sprite for Kanye's fire
 
   Enemies = new Group(); //Creates Enemies Sprites
+  EnemiesHealth = new Group(); //Creates EnemiesHealth Sprites for Enemies
 
-  EnemiesHealth = new Group(); //Creates EnemiesHealth Sprites
 
+/* 
+  Structures Code start 
+*/
+  
   Structures = new Group(); //Creates Structures Sprites
 
-    //  Code for creating Structures
-  for(var i = 0; i < 37; i++) {
-    var a = random(2, 5); //arbitrary value w
-    var b = random(1, 6); //arbitrary value pt. 2 h
+  //  Code for creating Structures
+  // for(var i = 0; i < 21; i++) {
+  //   var a = random(2, 5); //arbitrary value w
+  //   var b = random(1, 6); //arbitrary value pt. 2 h
 
-    var w = 50 + (25 * a);
-    var h = 50 + (25 * b);
+  //   var w = 50 + (25 * a);
+  //   var h = 50 + (25 * b);
 
-    var posXmin = 700;
-    var posXmax = 1400;
+  //   var posXmin = 700;
+  //   var posXmax = 1400;
 
-    var posY = 475 - ((h - 50) / 2); //default for h = 50
+  //   var posY = 475 - ((h - 50) / 2); //default for h = 50
 
-    if(i === 0) {
-      var posX = random(posXmin, posXmax);
-      createStructureSprite(posX, posY, w, h);
-    } else {
-      var posX = random(posXmin, posXmax) + 800 * i;
-      createStructureSprite(posX, posY, w, h);
-    }
-  }
+  //   var posX = random(posXmin, posXmax);
+  //   createStructureSprite(posX, posY, w, h);
+  // }
+/* 
 
+  Structures Code End 
+  
+*/
+
+
+/* 
+
+  Clouds Code Start 
+  
+*/
   Clouds = new Group(); //Creates Clouds Sprites
 
     //  Code for creating Clouds
-  for(var i = Clouds.length; i < 80; i++) {
-    var a = random(0, 5); //arbitrary value w
-    var b = random(0, 2); //arbitrary value pt. 2 h
+  for(var i = 0; i < 80; i++) {
+    var a = Math.floor(random(0, 5)); //arbitrary value w
+    var b = Math.floor(random(0, 2)); //arbitrary value pt. 2 h
 
     if (a < b) {
-      a = random(0, 5);
-      b = random(0, 2);
+      a = Math.floor(random(0, 5));
+      b = Math.floor(random(0, 2));
     }
 
     var w = 50 + (25 * a);
     var h = 50 + (25 * b);
 
-    var posXmin = 700;
+    var posXmin = start;
     var posXmax = 1400;
 
     var posY = random(height / 3.75, 0);
-
-    if(i === 0) {
+  
+    if(i <= 40) {
       var posX = random(posXmin, posXmax);
-      createCloudSprite(posX, posY, w, h);
+      createCloudSprite(posX, posY, w, h);  
     } else {
-      posXmin += 800 * i;
-      posXmax += 800 * i;
-      var posX = random(posXmin, posXmax);
+      var posX = random(posXmin + width, posXmax + width);
       createCloudSprite(posX, posY, w, h);
     }
+    
   }
+  
+/* 
 
-  Ground = createSprite(width/2, 550, 2800, 100); //Creates Ground Sprite
+  Clouds Code End 
+  
+*/
+
+  numGroundSprites = width / 400 + 2;
+  Ground = new Group();
+  
+  for(var i = 0; i < numGroundSprites; i++) {
+    var rand = random(0, 8);
+    if(rand > 4) {
+     var groundSprite = createSprite(i * 400 + (rand * 100), height - 50, 400, 100);
+      Ground.add(groundSprite); 
+    } else {
+      var groundSprite = createSprite(i * 400 + (300), height - 50, 400, 100);
+      Ground.add(groundSprite); 
+    }
+  }
+  // createSprite(width/2, 550, 2800, 100); //Creates Ground Sprite
   // Ground.addImage(GroundImg);
 
   // Background = createSprite();
@@ -121,7 +138,7 @@ function setup() {
 }
 
 function draw() {
-  background(100, 150, 200);
+  background(150, 200, 250);
 
   //Player | CAMERA | GUI bounds
 
@@ -152,19 +169,13 @@ function draw() {
 
   */
 
-  //GRAVITY
-  Player.velocity.y += GRAVITY;
-  if(Player.position.y < 225) {
-    Player.position.y = 225;
-  }
-
   //Wrap ground
 
-  if(camera.position.x > Ground.position.x + width / 4) {
-    Ground.position.x += Ground.width / 6;
-  } else if(camera.position.x < Ground.position.x - width / 4) {
-    Ground.position.x -= Ground.width / 6;
-  }
+  // if(camera.position.x > Ground.position.x + width / 4) {
+  //   Ground.position.x += Ground.width / 6;
+  // } else if(camera.position.x < Ground.position.x - width / 4) {
+  //   Ground.position.x -= Ground.width / 6;
+  // }
   /*
 
   End of ground wrapping.
@@ -175,16 +186,24 @@ function draw() {
 
     //  Jump
   if(keyWentDown(87)) {
-    Player.velocity.y = JUMP;
+    Player.velocity.y = Jump;
+  }
+  
+    //GRAVITY
+  Player.velocity.y += Gravity;
+  if(Player.position.y < 225) {
+    Player.position.y = 225;
   }
 
     //  Left | Right
-  if(keyDown(65)) {
-    Player.position.x -= playerStep;
-    Player.mirrorX(1);
-  } else if(keyDown(68)) {
+  // if(keyDown(65)) {
+  //   Player.position.x -= playerStep;
+  //   Player.mirrorX(1);
+  // } else 
+  
+  if(keyDown(68)) {
     Player.position.x += playerStep;
-    Player.mirrorX(-1);
+    // Player.mirrorX(-1);
   }
 
     //  Sprinting
@@ -213,7 +232,7 @@ function draw() {
       var fire = createSprite(Player.position.x - 20 * Player.mirrorX(), Player.position.y, map(FireCounter, 0, 100, 0, 100), map(FireCounter, 0, 100, 0, 100));
       //fire.addImage(FireImg);
       fire.life = 40;
-      fire.setSpeed(-(11 + playerStep) * Player.mirrorX(), 0);
+      fire.setSpeed((11 + playerStep) * Player.mirrorX(), 0);
       //fire.setCollider("circle", 0, 0, 50)
       fire.mirrorX(-1 * Player.mirrorX());
 
@@ -301,7 +320,9 @@ function draw() {
     }
 
     EnemiesHealth[i].position.x = Enemies[i].position.x;
+    
     Enemies[i].position.x += Enemies[i].velocity;
+    
     // if(Enemies[i].visible && Structures[i].visible) {
       if(Enemies[i].collide(Structures) || EnemiesHealth[i].collide(Structures)) {
         //hopefully reverses direction
@@ -313,8 +334,8 @@ function draw() {
     // console.log("pos x enemy[0]: " + Enemies[0].position.x);
     // console.log("pos x enemy[1]: " + Enemies[1].position.x);
 
-    Enemies[i].move();
-    Enemies[i].display();
+    // Enemies[i].move();
+    // Enemies[i].display();
   }
 
     //  Hide or reveal pre created structures
@@ -327,24 +348,39 @@ function draw() {
   }
 
     //  Hide or reveal pre created Clouds
-  for(var i = 0; i < Clouds.length; i++) {
-    if(Clouds[i].position.x + (Clouds[i].width / 2) >= camera.position.x - 700 && Clouds[i].position.x - (Clouds[i].width / 2) <= camera.position.x + 700) {
-      Clouds[i].visible = true;
-    }else{
-      Clouds[i].visible = false;
+  // for(var i = 0; i < Clouds.length; i++) {
+  //   if(Clouds[i].position.x + (Clouds[i].width / 2) >= camera.position.x - 700 && Clouds[i].position.x - (Clouds[i].width / 2) <= camera.position.x + 700) {
+  //     Clouds[i].visible = true;
+  //   }else{
+  //     Clouds[i].visible = false;
+  //   }
+    var firstCloud = Clouds[0];
+    if(firstCloud.position.x + (firstCloud.width / 2) <= camera.position.x - (width/2)) {
+      Clouds.remove(firstCloud);
+      
+    var posXmin = 700;
+    var posXmax = 1400;
+    var posY = random(height / 3.75, 0);
+    var posX = random(posXmin, posXmax);
+    
+      firstCloud.position.x = firstCloud.position.x + width;
+      Clouds.add(firstCloud);
     }
     // Enemies[i].collide(Structures);
-  }
+  //}
   /*
 
   End of Environment Sprites code.
 
   */
-
-  //Debug
-  Ground.debug = false;
-  Player.debug = true;
-  BossCastle.debug = false;
+  
+    //  remove old floor
+    var firstGround = Ground[0];
+    if (firstGround.position.x + firstGround.width / 2 <= camera.position.x - (width/2)) {
+      Ground.remove(firstGround);
+      firstGround.position.x = firstGround.position.x + numGroundSprites * firstGround.width;
+      Ground.add(firstGround);
+    }
 
   drawSprites();
 }
