@@ -186,6 +186,7 @@ function draw() {
 
     enemyDefeated = false;
   } else if (GameOver) {
+    clear();
     //end of game overall code
     background(0);
     textSize(64);
