@@ -1,19 +1,25 @@
+//MAIN GAME VARIABLES
 var Gravity = .7; //Constant
 var Jump = -14; //Constant
-var Player, PlayerHealth, Fire, FireHealth, Enemies, EnemiesHealth, Structures, Clouds, Ground, GroundBeg, GroundEnd, Background, BossCastle; //Sprites
+var Player, PlayerHealth, Fire, FireHealth, Enemies, Boss, EnemiesHealth, Structures, Clouds, Ground, GroundBeg, GroundEnd, Background, BossCastle; //Sprites
 var PlayerImg, PlayerHealthImg, FireImg, EnemiesImg, EnemiesHealthImg, StructuresImg, CloudsImg, GroundImg, BackgroundImg; //Images
-var start = 0; //  left/right
-var end   = 8000; // bounds respectively
+var start = 0; //     left/right
+var end   = 8000; //  bounds respectively
 var numGroundSprites;
 var numStructureSprites;
 //  fireball health bar related code
 var FireCounter = 100;
 var FireDamage;
 //some constants
-var playerStep = 6;
+var playerStep = 6; //  Default Value is 6
 var battleMode;
 var enemyDefeated;
+
+//GAME OVER VARIABLES
 var GameOver;
+var Continue;
+var SaveAndContinue;
+var SaveAndQuit;
 
 //  For Images and sounds
 function preload() {
@@ -61,21 +67,23 @@ function setup() {
   */
 
   Enemies = new Group(); //creates array for ENEMIES objects
+  
+  Boss = createSprite(end - 200, height - 125, 50, 50);
 
   EnemiesHealth = new Group(); //creates array for ENEMIESHEALTH objects to meter health of ENEMIES
 
     //  generates ENEMIES
-  for(i = 0; i < 9; i++) {
-    var w = Math.floor(random(50, 75));
-    var h = Math.floor(random(50, 75));
-    var enemy = createSprite(end - 200, height - 150, 50, 50);
-    Enemies.add(enemy);
-    // Enemies[i].visible = false;
+  // for(i = 0; i < 9; i++) {
+  //   var w = Math.floor(random(50, 75));
+  //   var h = Math.floor(random(50, 75));
+  //   var enemy = createSprite(end - 200, height - 150, 50, 50);
+  //   Enemies.add(enemy);
+  //   // Enemies[i].visible = false;
 
-    var enemiesHealth = createSprite(end - 200, height - 175, 50, 50);
-    EnemiesHealth.add(enemiesHealth);
-    // EnemiesHealth[i].visible = false;
-  }
+  //   var enemiesHealth = createSprite(end - 200, height - 175, 50, 50);
+  //   EnemiesHealth.add(enemiesHealth);
+  //   // EnemiesHealth[i].visible = false;
+  // }
 
 /*
   Structures Code start
@@ -161,11 +169,15 @@ function setup() {
   battleMode = false;
   enemyDefeated = false;
   GameOver = false;
+  Continue = false;
+  SaveAndContinue = false;
+  SaveAndQuit = false;
+
 }
 
 function draw() {
 
-  if(enemyDefeated) {
+  if(enemyDefeated) {       //player wins?
     Ground.removeSprites();
 
     for(var i = 0; i < numGroundSprites; i++) {
@@ -185,23 +197,42 @@ function draw() {
     Structures.removeSprites();
 
     enemyDefeated = false;
-  } else if (GameOver) {
-    clear();
+  } else if (GameOver) {    //PLAYER DIES or smthn
     //end of game overall code
+    Structures.removeSprites();
+    Clouds.removeSprites();
+    Ground.removeSprites();
+    GroundBeg.remove();
+    GroundEnd.remove();
+    PlayerHealth.remove();
+    FireHealth.remove();
+    
+    clear();
     background(0);
+    
+    // var e = ellipse(start + 700, height / 2, height, height);
+    // for (var i = height; i > 0; i -= .1) {
+    //   e.width = i;
+    //   e.height = i;
+    // } FAILED ATTEMPT AT ZOOMING IN TO GAME OVER
+    
     textSize(64);
     fill(255);
     textAlign(CENTER);
-    text("GAME OVER", camera.position.x, camera.position.y);
+    var over = text("GAME OVER", camera.position.x, camera.position.y);
+
+    if(over.x < height / 2 + height / 4) {
+      over.x += 1; 
+    }
 
     //delete entire canvas
     //if player does a thing to confrm restart of game or whatever
       //call function to redraw shit
       //reset values
       //errone happy
-  } else {
+  } else {                 //MAIN GAME
 
-    //MAIN GAME
+   
 
     background(150, 200, 250);
     //Player | CAMERA | GUI bounds
@@ -312,6 +343,33 @@ function draw() {
     /*
 
     End of PLAYER code.
+
+    */
+    
+    /*
+
+    BOSS Code
+
+    */
+    
+      //  Boss bounding
+    var t = 0;
+    var BossX = noise(t);
+    BossX = map(t, 0, 1, end - 525, end);
+    
+    if(Boss.position.x > end - 25) {
+      Boss.position.x = end - 25;
+    } else if(Boss.position.x < start + 875) {
+      Boss.position.x += 6;
+    } else {
+      Boss.position.x = BossX;
+    }
+    
+    t += 0.01;
+    
+    /*
+
+    End of BOSS code.
 
     */
 
